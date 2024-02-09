@@ -7,7 +7,7 @@ Subject: [PATCH] Entity Jump API
 public net.minecraft.world.entity.LivingEntity jumping
 
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index e06aa636bf4e18ca2810e0626f427839cd2bce88..bc51c6d8b39907d89a4f65cd7a8266df1fceab8c 100644
+index 3dd5cb6a6e0a1df7e8bd9c0ba6b3f3b99c14c496..c785eac184986ab833abe055837f4769740c4651 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -3283,8 +3283,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
@@ -50,10 +50,10 @@ index aba20a4352d8983b01ab5d329187588f68d3e405..aac60e85cd6dba7d87f4a1663c2c6295
              }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
-index dbfeeacbb503aad5897c92c902d16fdbea7b793f..d5135ac97b2d4af7391a58799497c649cfcf8041 100644
+index fc7b54892af62e8b6e1cc93f2937e05bbfd01c8c..eed8322f534a9556dbb99c4c32b135dfc3dd8b0f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
-@@ -922,5 +922,19 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
+@@ -909,5 +909,19 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
      public org.bukkit.inventory.EquipmentSlot getHandRaised() {
          return getHandle().getUsedItemHand() == net.minecraft.world.InteractionHand.MAIN_HAND ? org.bukkit.inventory.EquipmentSlot.HAND : org.bukkit.inventory.EquipmentSlot.OFF_HAND;
      }
