@@ -8,7 +8,7 @@ diff --git a/src/main/java/org/bukkit/entity/LivingEntity.java b/src/main/java/o
 index 2976955607f9cbb9b552aa43f25b5b9d52f7437e..8bdba2b2957a199d03e5407989d0ba7918294ec3 100644
 --- a/src/main/java/org/bukkit/entity/LivingEntity.java
 +++ b/src/main/java/org/bukkit/entity/LivingEntity.java
-@@ -1167,5 +1167,23 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+@@ -1201,5 +1201,23 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
       */
      @Deprecated
      void setHurtDirection(float hurtDirection);
