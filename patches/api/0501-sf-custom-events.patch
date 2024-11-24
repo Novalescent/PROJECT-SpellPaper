@@ -1,0 +1,96 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: WarlordWeaponry <minecraft2013@cox.net>
+Date: Sun, 24 Nov 2024 17:10:58 -0500
+Subject: [PATCH] sf-custom-events
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/event/block/BlockFallingParticleEvent.java b/src/main/java/com/destroystokyo/paper/event/block/BlockFallingParticleEvent.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..602c40448f2ff02ad45af4d529fcd67d6e379190
+--- /dev/null
++++ b/src/main/java/com/destroystokyo/paper/event/block/BlockFallingParticleEvent.java
+@@ -0,0 +1,38 @@
++package com.destroystokyo.paper.event.block;
++
++import org.bukkit.Location;
++import org.bukkit.block.Block;
++import org.bukkit.event.Cancellable;
++import org.bukkit.event.Event;
++import org.bukkit.event.HandlerList;
++import org.jetbrains.annotations.NotNull;
++
++public class BlockFallingParticleEvent extends Event implements Cancellable {
++
++	private final Block mBlock;
++	private final Location mLocation;
++	public BlockFallingParticleEvent(Block block) {
++		mBlock = block;
++		mLocation = block.getLocation();
++	}
++
++	public Block getBlock() {
++		return mBlock;
++	}
++
++	public Location getLocation() {
++		return mLocation;
++	}
++
++	@Override public boolean isCancelled() {
++		return false;
++	}
++
++	@Override public void setCancelled(boolean cancel) {
++
++	}
++
++	@Override public @NotNull HandlerList getHandlers() {
++		return null;
++	}
++}
+diff --git a/src/main/java/com/destroystokyo/paper/event/entity/EntityPreTeleportEvent.java b/src/main/java/com/destroystokyo/paper/event/entity/EntityPreTeleportEvent.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..d640205317b145e3b56a1b648c263a829aad555a
+--- /dev/null
++++ b/src/main/java/com/destroystokyo/paper/event/entity/EntityPreTeleportEvent.java
+@@ -0,0 +1,19 @@
++package com.destroystokyo.paper.event.entity;
++
++import org.bukkit.Location;
++import org.bukkit.entity.Entity;
++import org.bukkit.event.entity.EntityTeleportEvent;
++import org.jetbrains.annotations.NotNull;
++import org.jetbrains.annotations.Nullable;
++
++/**
++ * For PROJECT Spellforged. This event is fired off before the teleportation checks begin to prepare the entity for teleportation,
++ * such as removing passengers.
++ */
++public class EntityPreTeleportEvent extends EntityTeleportEvent {
++
++    public EntityPreTeleportEvent(@NotNull Entity what, @NotNull Location from, @Nullable Location to) {
++	        super(what, from, to);
++	}
++
++}
+diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
+index d0ae8a94db20281d3664d74718c65234eb2e5f83..fe02c7f921357f9c8f9e3c53bf82b12d52161e1f 100644
+--- a/src/main/java/org/bukkit/entity/Entity.java
++++ b/src/main/java/org/bukkit/entity/Entity.java
+@@ -10,6 +10,7 @@ import org.bukkit.Nameable;
+ import org.bukkit.Server;
+ import org.bukkit.Sound;
+ import org.bukkit.World;
++import org.bukkit.WorldBorder;
+ import org.bukkit.block.BlockFace;
+ import org.bukkit.block.PistonMoveReaction;
+ import org.bukkit.command.CommandSender;
+@@ -1172,4 +1173,8 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
+      */
+     void broadcastHurtAnimation(@NotNull java.util.Collection<Player> players);
+     // Paper end - broadcast hurt animation
++
++    void setCollisionBorder(@javax.annotation.Nullable WorldBorder border);
++
++    @Nullable WorldBorder getCollisionBorder();
+ }

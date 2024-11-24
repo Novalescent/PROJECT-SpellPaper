@@ -1,0 +1,567 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: WarlordWeaponry <minecraft2013@cox.net>
+Date: Sun, 24 Nov 2024 17:10:36 -0500
+Subject: [PATCH] sf-custom-behaviors-and-patches
+
+
+diff --git a/src/main/java/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java b/src/main/java/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
+index aec503ca1551ce4b15b8975832cd664ebd670722..ee02480b6fcdc10d37e01864b6da62adbd1a9832 100644
+--- a/src/main/java/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
++++ b/src/main/java/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
+@@ -1920,7 +1920,7 @@ public final class CollisionUtil {
+         boolean ret = false;
+ 
+         if ((collisionFlags & COLLISION_FLAG_CHECK_BORDER) != 0) {
+-            final WorldBorder worldBorder = world.getWorldBorder();
++            final WorldBorder worldBorder = entity != null && entity.getCollisionBorder() != null ? entity.getCollisionBorder() : world.getWorldBorder();
+             if (CollisionUtil.isCollidingWithBorder(worldBorder, aabb) && entity != null && worldBorder.isInsideCloseToBorder(entity, aabb)) {
+                 if (checkOnly) {
+                     return true;
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index ed5b00620527c1776722d25b1b45f1544802a341..cd2fa99f898046b440cb558e9f202097df378f6d 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -5369,4 +5369,15 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+         return ((net.minecraft.server.level.ServerLevel) this.level).isPositionEntityTicking(this.blockPosition());
+     }
+     // Paper end - Expose entity id counter
++
++    @Nullable
++    private WorldBorder collisionBorder;
++
++    public @Nullable WorldBorder getCollisionBorder() {
++        return collisionBorder;
++    }
++
++    public void setCollisionBorder(@Nullable WorldBorder border) {
++        collisionBorder = border;
++    }
+ }
+diff --git a/src/main/java/net/minecraft/world/entity/monster/EnderMan.java b/src/main/java/net/minecraft/world/entity/monster/EnderMan.java
+index 48dcd2bc12ce1d08cc5195bff5460dc0dd9902d3..94433683ec83df6e703006d922b23c09f61a18cc 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/EnderMan.java
++++ b/src/main/java/net/minecraft/world/entity/monster/EnderMan.java
+@@ -379,37 +379,6 @@ public class EnderMan extends Monster implements NeutralMob {
+         return (BlockState) ((Optional) this.entityData.get(EnderMan.DATA_CARRY_STATE)).orElse((Object) null);
+     }
+ 
+-    @Override
+-    public boolean hurtServer(ServerLevel world, DamageSource source, float amount) {
+-        if (this.isInvulnerableTo(world, source)) {
+-            return false;
+-        } else {
+-            boolean flag = source.getDirectEntity() instanceof ThrownPotion;
+-            boolean flag1;
+-
+-            if (!source.is(DamageTypeTags.IS_PROJECTILE) && !flag) {
+-                flag1 = super.hurtServer(world, source, amount);
+-                if (!(source.getEntity() instanceof LivingEntity) && this.random.nextInt(10) != 0) {
+-                    this.teleport();
+-                }
+-
+-                return flag1;
+-            } else {
+-                flag1 = flag && this.hurtWithCleanWater(world, source, (ThrownPotion) source.getDirectEntity(), amount);
+-
+-                if (this.tryEscape(com.destroystokyo.paper.event.entity.EndermanEscapeEvent.Reason.INDIRECT)) { // Paper - EndermanEscapeEvent
+-                for (int i = 0; i < 64; ++i) {
+-                    if (this.teleport()) {
+-                        return true;
+-                    }
+-                }
+-                } // Paper - EndermanEscapeEvent
+-
+-                return flag1;
+-            }
+-        }
+-    }
+-
+     private boolean hurtWithCleanWater(ServerLevel world, DamageSource source, ThrownPotion potion, float amount) {
+         ItemStack itemstack = potion.getItem();
+         PotionContents potioncontents = (PotionContents) itemstack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Spider.java b/src/main/java/net/minecraft/world/entity/monster/Spider.java
+index 91e521414c3ea5722aac7506b7589fbb399e9636..ad45ed78b074c079efc5a23c73adbfe3cfced85c 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Spider.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Spider.java
+@@ -81,10 +81,6 @@ public class Spider extends Monster {
+     @Override
+     public void tick() {
+         super.tick();
+-        if (!this.level().isClientSide) {
+-            this.setClimbing(this.horizontalCollision && (this.level().paperConfig().entities.behavior.allowSpiderWorldBorderClimbing || !(ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.isCollidingWithBorder(this.level().getWorldBorder(), this.getBoundingBox().inflate(ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.COLLISION_EPSILON)) && this.level().getWorldBorder().isInsideCloseToBorder(this, this.getBoundingBox())))); // Paper - Add config option for spider worldborder climbing (Inflate by +EPSILON as collision will just barely place us outside border)
+-        }
+-
+     }
+ 
+     public static AttributeSupplier.Builder createAttributes() {
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java b/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
+index 571f0699772eecbe02d71845da82a142321f2142..22658b2f2f534a4be267062fcaeff5db70008d1f 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
+@@ -326,10 +326,6 @@ public abstract class AbstractArrow extends Projectile {
+         Vec3 vec3d = this.getDeltaMovement();
+         float f = 0.99F;
+ 
+-        if (this.isInWater()) {
+-            f = this.getWaterInertia();
+-        }
+-
+         this.setDeltaMovement(vec3d.scale((double) f));
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/level/block/BambooSaplingBlock.java b/src/main/java/net/minecraft/world/level/block/BambooSaplingBlock.java
+index d690c1f74c01b24ec4a65a471f8e50ab30e64e4e..ab319a57bfdb99cff16168af3563bf09febdbe80 100644
+--- a/src/main/java/net/minecraft/world/level/block/BambooSaplingBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/BambooSaplingBlock.java
+@@ -45,9 +45,6 @@ public class BambooSaplingBlock extends Block implements BonemealableBlock {
+ 
+     @Override
+     protected void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
+-        if (random.nextFloat() < (world.spigotConfig.bambooModifier / (100.0f * 3)) && world.isEmptyBlock(pos.above()) && world.getRawBrightness(pos.above(), 0) >= 9) { // Spigot - SPIGOT-7159: Better modifier resolution
+-            this.growBamboo(world, pos);
+-        }
+ 
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/level/block/BambooStalkBlock.java b/src/main/java/net/minecraft/world/level/block/BambooStalkBlock.java
+index 5e88bd02f5c53124f1aeec3eae727a1f83cc8238..7767b71f8625c7ac2b1331691db7d50952f68d08 100644
+--- a/src/main/java/net/minecraft/world/level/block/BambooStalkBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/BambooStalkBlock.java
+@@ -133,16 +133,7 @@ public class BambooStalkBlock extends Block implements BonemealableBlock {
+ 
+     @Override
+     protected void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
+-        if ((Integer) state.getValue(BambooStalkBlock.STAGE) == 0) {
+-            if (random.nextFloat() < (world.spigotConfig.bambooModifier / (100.0f * 3)) && world.isEmptyBlock(pos.above()) && world.getRawBrightness(pos.above(), 0) >= 9) { // Spigot - SPIGOT-7159: Better modifier resolution
+-                int i = this.getHeightBelowUpToMax(world, pos) + 1;
+ 
+-                if (i < world.paperConfig().maxGrowthHeight.bamboo.max) { // Paper - Configurable cactus/bamboo/reed growth height
+-                    this.growBamboo(state, world, pos, random, i);
+-                }
+-            }
+-
+-        }
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/world/level/block/CactusBlock.java b/src/main/java/net/minecraft/world/level/block/CactusBlock.java
+index c045b1cccf0047dbef8c04d5a28d31d53389054f..dcca7dab8080ae1768395755368fcfdea645d27f 100644
+--- a/src/main/java/net/minecraft/world/level/block/CactusBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/CactusBlock.java
+@@ -53,31 +53,7 @@ public class CactusBlock extends Block {
+ 
+     @Override
+     protected void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
+-        BlockPos blockposition1 = pos.above();
+ 
+-        if (world.isEmptyBlock(blockposition1)) {
+-            int i;
+-
+-            for (i = 1; world.getBlockState(pos.below(i)).is((Block) this); ++i) {
+-                ;
+-            }
+-
+-            if (i < world.paperConfig().maxGrowthHeight.cactus) { // Paper - Configurable cactus/bamboo/reed growth height
+-                int j = (Integer) state.getValue(CactusBlock.AGE);
+-
+-                int modifier = world.spigotConfig.cactusModifier; // Spigot - SPIGOT-7159: Better modifier resolution
+-                if (j >= 15 || (modifier != 100 && random.nextFloat() < (modifier / (100.0f * 16)))) { // Spigot - SPIGOT-7159: Better modifier resolution
+-                    CraftEventFactory.handleBlockGrowEvent(world, blockposition1, this.defaultBlockState()); // CraftBukkit
+-                    BlockState iblockdata1 = (BlockState) state.setValue(CactusBlock.AGE, 0);
+-
+-                    world.setBlock(pos, iblockdata1, 4);
+-                    world.neighborChanged(iblockdata1, blockposition1, this, (Orientation) null, false);
+-                } else if (modifier == 100 || random.nextFloat() < (modifier / (100.0f * 16))) { // Spigot - SPIGOT-7159: Better modifier resolution
+-                    world.setBlock(pos, (BlockState) state.setValue(CactusBlock.AGE, j + 1), 4);
+-                }
+-
+-            }
+-        }
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/world/level/block/FallingBlock.java b/src/main/java/net/minecraft/world/level/block/FallingBlock.java
+index 3b15bff00aa5889608cd0cff686c8c300127893a..c7354bfddd133ac2e8f1857635e0bd44dae87212 100644
+--- a/src/main/java/net/minecraft/world/level/block/FallingBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/FallingBlock.java
+@@ -47,10 +47,7 @@ public abstract class FallingBlock extends Block implements Fallable {
+ 
+     @Override
+     protected void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
+-        if (isFree(world.getBlockState(pos.below())) && pos.getY() >= world.getMinY()) {
+-            FallingBlockEntity fallingBlockEntity = FallingBlockEntity.fall(world, pos, state);
+-            this.falling(fallingBlockEntity);
+-        }
++
+     }
+ 
+     protected void falling(FallingBlockEntity entity) {
+@@ -66,12 +63,7 @@ public abstract class FallingBlock extends Block implements Fallable {
+ 
+     @Override
+     public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource random) {
+-        if (random.nextInt(16) == 0) {
+-            BlockPos blockPos = pos.below();
+-            if (isFree(world.getBlockState(blockPos))) {
+-                ParticleUtils.spawnParticleBelow(world, pos, random, new BlockParticleOption(ParticleTypes.FALLING_DUST, state));
+-            }
+-        }
++
+     }
+ 
+     public int getDustColor(BlockState state, BlockGetter world, BlockPos pos) {
+diff --git a/src/main/java/net/minecraft/world/level/block/FarmBlock.java b/src/main/java/net/minecraft/world/level/block/FarmBlock.java
+index c3dba0c2c94f3804338f86621dc42405e380a6b3..96f5c250b67b482997cc398705780139c1b004f0 100644
+--- a/src/main/java/net/minecraft/world/level/block/FarmBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/FarmBlock.java
+@@ -84,57 +84,17 @@ public class FarmBlock extends Block {
+ 
+     @Override
+     protected void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
+-        if (!state.canSurvive(world, pos)) {
+-            FarmBlock.turnToDirt((Entity) null, state, world, pos);
+-        }
+ 
+     }
+ 
+     @Override
+     protected void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
+-        int i = (Integer) state.getValue(FarmBlock.MOISTURE);
+-        if (i > 0 && world.paperConfig().tickRates.wetFarmland != 1 && (world.paperConfig().tickRates.wetFarmland < 1 || (net.minecraft.server.MinecraftServer.currentTick + pos.hashCode()) % world.paperConfig().tickRates.wetFarmland != 0)) { return; } // Paper - Configurable random tick rates for blocks
+-        if (i == 0 && world.paperConfig().tickRates.dryFarmland != 1 && (world.paperConfig().tickRates.dryFarmland < 1 || (net.minecraft.server.MinecraftServer.currentTick + pos.hashCode()) % world.paperConfig().tickRates.dryFarmland != 0)) { return; } // Paper - Configurable random tick rates for blocks
+-
+-        if (!FarmBlock.isNearWater(world, pos) && !world.isRainingAt(pos.above())) {
+-            if (i > 0) {
+-                org.bukkit.craftbukkit.event.CraftEventFactory.handleMoistureChangeEvent(world, pos, (BlockState) state.setValue(FarmBlock.MOISTURE, i - 1), 2); // CraftBukkit
+-            } else if (!FarmBlock.shouldMaintainFarmland(world, pos)) {
+-                FarmBlock.turnToDirt((Entity) null, state, world, pos);
+-            }
+-        } else if (i < 7) {
+-            org.bukkit.craftbukkit.event.CraftEventFactory.handleMoistureChangeEvent(world, pos, (BlockState) state.setValue(FarmBlock.MOISTURE, 7), 2); // CraftBukkit
+-        }
+ 
+     }
+ 
+     @Override
+     public void fallOn(Level world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
+-        super.fallOn(world, state, pos, entity, fallDistance); // CraftBukkit - moved here as game rules / events shouldn't affect fall damage.
+-        if (world instanceof ServerLevel worldserver) {
+-            if (world.random.nextFloat() < fallDistance - 0.5F && entity instanceof LivingEntity && (entity instanceof Player || worldserver.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) && entity.getBbWidth() * entity.getBbWidth() * entity.getBbHeight() > 0.512F) {
+-                // CraftBukkit start - Interact soil
+-                org.bukkit.event.Cancellable cancellable;
+-                if (entity instanceof Player) {
+-                    cancellable = CraftEventFactory.callPlayerInteractEvent((Player) entity, org.bukkit.event.block.Action.PHYSICAL, pos, null, null, null);
+-                } else {
+-                    cancellable = new EntityInteractEvent(entity.getBukkitEntity(), world.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ()));
+-                    world.getCraftServer().getPluginManager().callEvent((EntityInteractEvent) cancellable);
+-                }
+-
+-                if (cancellable.isCancelled()) {
+-                    return;
+-                }
+-
+-                if (!CraftEventFactory.callEntityChangeBlockEvent(entity, pos, Blocks.DIRT.defaultBlockState())) {
+-                    return;
+-                }
+-                // CraftBukkit end
+-                FarmBlock.turnToDirt(entity, state, world, pos);
+-            }
+-        }
+ 
+-        // super.fallOn(world, iblockdata, blockposition, entity, f); // CraftBukkit - moved up
+     }
+ 
+     public static void turnToDirt(@Nullable Entity entity, BlockState state, Level world, BlockPos pos) {
+diff --git a/src/main/java/net/minecraft/world/level/block/HopperBlock.java b/src/main/java/net/minecraft/world/level/block/HopperBlock.java
+index 005a2a66a6e8a492acfa7ba91117884cda08562d..4a341ed594282bdf3a5330cca1da312bca0b6d75 100644
+--- a/src/main/java/net/minecraft/world/level/block/HopperBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/HopperBlock.java
+@@ -182,11 +182,7 @@ public class HopperBlock extends BaseEntityBlock {
+ 
+     @Override
+     protected void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
+-        if (!new io.papermc.paper.event.entity.EntityInsideBlockEvent(entity.getBukkitEntity(), org.bukkit.craftbukkit.block.CraftBlock.at(world, pos)).callEvent()) { return; } // Paper - Add EntityInsideBlockEvent
+-        BlockEntity blockEntity = world.getBlockEntity(pos);
+-        if (blockEntity instanceof HopperBlockEntity) {
+-            HopperBlockEntity.entityInside(world, pos, state, entity, (HopperBlockEntity)blockEntity);
+-        }
++
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/world/level/block/LeavesBlock.java b/src/main/java/net/minecraft/world/level/block/LeavesBlock.java
+index de9cbe4868276011d69536a0532ff57fe7a77bf3..d97f450ca0e9fb05ca4313405991bb9b8cf43a02 100644
+--- a/src/main/java/net/minecraft/world/level/block/LeavesBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/LeavesBlock.java
+@@ -1,5 +1,6 @@
+ package net.minecraft.world.level.block;
+ 
++import com.destroystokyo.paper.event.block.BlockFallingParticleEvent;
+ import com.mojang.serialization.MapCodec;
+ import java.util.OptionalInt;
+ import net.minecraft.core.BlockPos;
+@@ -54,33 +55,21 @@ public class LeavesBlock extends Block implements SimpleWaterloggedBlock {
+ 
+     @Override
+     protected boolean isRandomlyTicking(BlockState state) {
+-        return (Integer) state.getValue(LeavesBlock.DISTANCE) == 7 && !(Boolean) state.getValue(LeavesBlock.PERSISTENT);
++        return true;
+     }
+ 
+     @Override
+     protected void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
+-        if (this.decaying(state)) {
+-            // CraftBukkit start
+-            LeavesDecayEvent event = new LeavesDecayEvent(world.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ()));
++        BlockPos below = pos.below();
++        if (FallingBlock.isFree(world.getBlockState(below))) {
++            BlockFallingParticleEvent event = new BlockFallingParticleEvent(world.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ()));
+             world.getCraftServer().getPluginManager().callEvent(event);
+-
+-            if (event.isCancelled() || world.getBlockState(pos).getBlock() != this) {
+-                return;
+-            }
+-            // CraftBukkit end
+-            dropResources(state, world, pos);
+-            world.removeBlock(pos, false);
+         }
+-
+-    }
+-
+-    protected boolean decaying(BlockState state) {
+-        return !(Boolean) state.getValue(LeavesBlock.PERSISTENT) && (Integer) state.getValue(LeavesBlock.DISTANCE) == 7;
+     }
+ 
+     @Override
+     protected void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
+-        world.setBlock(pos, LeavesBlock.updateDistance(state, world, pos), 3);
++
+     }
+ 
+     @Override
+@@ -137,16 +126,7 @@ public class LeavesBlock extends Block implements SimpleWaterloggedBlock {
+ 
+     @Override
+     public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource random) {
+-        if (world.isRainingAt(pos.above())) {
+-            if (random.nextInt(15) == 1) {
+-                BlockPos blockposition1 = pos.below();
+-                BlockState iblockdata1 = world.getBlockState(blockposition1);
+-
+-                if (!iblockdata1.canOcclude() || !iblockdata1.isFaceSturdy(world, blockposition1, Direction.UP)) {
+-                    ParticleUtils.spawnParticleBelow(world, pos, random, ParticleTypes.DRIPPING_WATER);
+-                }
+-            }
+-        }
++
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/world/level/block/MangrovePropaguleBlock.java b/src/main/java/net/minecraft/world/level/block/MangrovePropaguleBlock.java
+index 6b18db68c8b95480992199126c6063ea728d2314..937297a14f3b07b4ea91785a3a8d322ff613ad9a 100644
+--- a/src/main/java/net/minecraft/world/level/block/MangrovePropaguleBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/MangrovePropaguleBlock.java
+@@ -122,15 +122,7 @@ public class MangrovePropaguleBlock extends SaplingBlock implements SimpleWaterl
+ 
+     @Override
+     protected void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
+-        if (!isHanging(state)) {
+-            if (random.nextFloat() < (world.spigotConfig.saplingModifier / (100.0F * 7))) { // Paper - Fix Spigot growth modifiers
+-                this.advanceTree(world, pos, state, random);
+-            }
+-        } else {
+-            if (!isFullyGrown(state)) {
+-                world.setBlock(pos, state.cycle(AGE), 2);
+-            }
+-        }
++
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/world/level/block/NetherWartBlock.java b/src/main/java/net/minecraft/world/level/block/NetherWartBlock.java
+index acbd60a2f162fe0e254e36d0e8e7face3fc8a7b3..467864e2f3b5ae6672b7f08981f8650ed4113c5b 100644
+--- a/src/main/java/net/minecraft/world/level/block/NetherWartBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/NetherWartBlock.java
+@@ -50,12 +50,6 @@ public class NetherWartBlock extends BushBlock {
+ 
+     @Override
+     protected void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
+-        int i = (Integer) state.getValue(NetherWartBlock.AGE);
+-
+-        if (i < 3 && random.nextFloat() < (world.spigotConfig.wartModifier / (100.0f * 10))) { // Spigot - SPIGOT-7159: Better modifier resolution
+-            state = (BlockState) state.setValue(NetherWartBlock.AGE, i + 1);
+-            org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockGrowEvent(world, pos, state, 2); // CraftBukkit
+-        }
+ 
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/level/block/SaplingBlock.java b/src/main/java/net/minecraft/world/level/block/SaplingBlock.java
+index d262a5a6da57ef9ba9a6fe0dfbc88f577105e74f..8a8e1e20e0b56f16124389f89f99c1eda577bb49 100644
+--- a/src/main/java/net/minecraft/world/level/block/SaplingBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/SaplingBlock.java
+@@ -55,9 +55,6 @@ public class SaplingBlock extends BushBlock implements BonemealableBlock {
+ 
+     @Override
+     protected void randomTick(net.minecraft.world.level.block.state.BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
+-        if (world.getMaxLocalRawBrightness(pos.above()) >= 9 && random.nextFloat() < (world.spigotConfig.saplingModifier / (100.0f * 7))) { // Spigot - SPIGOT-7159: Better modifier resolution
+-            this.advanceTree(world, pos, state, random);
+-        }
+ 
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/level/block/TurtleEggBlock.java b/src/main/java/net/minecraft/world/level/block/TurtleEggBlock.java
+index 953ddb2ea6fd48e57712e30a6addf23e188e5312..29af9e2b3d73e488d5305adb4d06d2d7cdf23aa2 100644
+--- a/src/main/java/net/minecraft/world/level/block/TurtleEggBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/TurtleEggBlock.java
+@@ -60,20 +60,12 @@ public class TurtleEggBlock extends Block {
+ 
+     @Override
+     public void stepOn(Level world, BlockPos pos, BlockState state, Entity entity) {
+-        if (!entity.isSteppingCarefully()) {
+-            this.destroyEgg(world, state, pos, entity, 100);
+-        }
+ 
+-        super.stepOn(world, pos, state, entity);
+     }
+ 
+     @Override
+     public void fallOn(Level world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
+-        if (!(entity instanceof Zombie)) {
+-            this.destroyEgg(world, state, pos, entity, 3);
+-        }
+ 
+-        super.fallOn(world, state, pos, entity, fallDistance);
+     }
+ 
+     private void destroyEgg(Level world, BlockState state, BlockPos pos, Entity entity, int inverseChance) {
+@@ -114,41 +106,6 @@ public class TurtleEggBlock extends Block {
+ 
+     @Override
+     protected void randomTick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
+-        if (this.shouldUpdateHatchLevel(world) && TurtleEggBlock.onSand(world, pos)) {
+-            int i = (Integer) state.getValue(TurtleEggBlock.HATCH);
+-
+-            if (i < 2) {
+-                // CraftBukkit start - Call BlockGrowEvent
+-                if (!CraftEventFactory.handleBlockGrowEvent(world, pos, state.setValue(TurtleEggBlock.HATCH, i + 1), 2)) {
+-                    return;
+-                }
+-                // CraftBukkit end
+-                world.playSound((Player) null, pos, SoundEvents.TURTLE_EGG_CRACK, SoundSource.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
+-                // worldserver.setBlock(blockposition, (IBlockData) iblockdata.setValue(BlockTurtleEgg.HATCH, i + 1), 2); // CraftBukkit - handled above
+-                world.gameEvent((Holder) GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(state));
+-            } else {
+-                // CraftBukkit start - Call BlockFadeEvent
+-                if (CraftEventFactory.callBlockFadeEvent(world, pos, Blocks.AIR.defaultBlockState()).isCancelled()) {
+-                    return;
+-                }
+-                // CraftBukkit end
+-                world.playSound((Player) null, pos, SoundEvents.TURTLE_EGG_HATCH, SoundSource.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
+-                world.removeBlock(pos, false);
+-                world.gameEvent((Holder) GameEvent.BLOCK_DESTROY, pos, GameEvent.Context.of(state));
+-
+-                for (int j = 0; j < (Integer) state.getValue(TurtleEggBlock.EGGS); ++j) {
+-                    world.levelEvent(2001, pos, Block.getId(state));
+-                    Turtle entityturtle = (Turtle) EntityType.TURTLE.create(world, EntitySpawnReason.BREEDING);
+-
+-                    if (entityturtle != null) {
+-                        entityturtle.setAge(-24000);
+-                        entityturtle.setHomePos(pos);
+-                        entityturtle.moveTo((double) pos.getX() + 0.3D + (double) j * 0.2D, (double) pos.getY(), (double) pos.getZ() + 0.3D, 0.0F, 0.0F);
+-                        world.addFreshEntity(entityturtle, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.EGG); // CraftBukkit
+-                    }
+-                }
+-            }
+-        }
+ 
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java b/src/main/java/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
+index c84fd369d92932903c76bb2012602617d3e2d213..1babb43cf549ab2e05dac80b542731d9bbf1bbb3 100644
+--- a/src/main/java/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
++++ b/src/main/java/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
+@@ -403,13 +403,7 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+                     if (pathType == PathType.DOOR_OPEN && !bl) {
+                         pathType = PathType.BLOCKED;
+                     }
+-
+-                    if (pathType == PathType.RAIL
+-                        && this.getPathType(context, blockPos.getX(), blockPos.getY(), blockPos.getZ()) != PathType.RAIL
+-                        && this.getPathType(context, blockPos.getX(), blockPos.getY() - 1, blockPos.getZ()) != PathType.RAIL) {
+-                        pathType = PathType.UNPASSABLE_RAIL;
+-                    }
+-
++                    
+                     enumSet.add(pathType);
+                 }
+             }
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
+index ddabaed899c755925ad8618b78c33dacaf2126ac..c9d5ec972306800fd1d29a41ddb7b561606a5f8b 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
+@@ -1,5 +1,6 @@
+ package org.bukkit.craftbukkit.entity;
+ 
++import com.destroystokyo.paper.event.entity.EntityPreTeleportEvent;
+ import com.google.common.base.Function;
+ import com.google.common.base.Preconditions;
+ import com.google.common.base.Predicates;
+@@ -8,6 +9,7 @@ import com.google.common.collect.Lists;
+ import java.util.List;
+ import java.util.Set;
+ import java.util.UUID;
++import javax.annotation.Nullable;
+ import net.minecraft.nbt.CompoundTag;
+ import net.minecraft.nbt.Tag;
+ import net.minecraft.network.chat.Component;
+@@ -28,6 +30,7 @@ import org.bukkit.Location;
+ import org.bukkit.Server;
+ import org.bukkit.Sound;
+ import org.bukkit.World;
++import org.bukkit.WorldBorder;
+ import org.bukkit.block.BlockFace;
+ import org.bukkit.block.PistonMoveReaction;
+ import org.bukkit.craftbukkit.CraftServer;
+@@ -81,6 +84,8 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+     };
+     // Paper end - Folia schedulers
+ 
++    private WorldBorder collisionBorder;
++
+     public CraftEntity(final CraftServer server, final Entity entity) {
+         this.server = server;
+         this.entity = entity;
+@@ -240,6 +245,10 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+         // Paper end
+         Preconditions.checkArgument(location != null, "location cannot be null");
+         location.checkFinite();
++
++        EntityPreTeleportEvent preTeleportEvent = new EntityPreTeleportEvent(entity.getBukkitEntity(), entity.getBukkitEntity().getLocation(), location);
++        preTeleportEvent.callEvent();
++
+         // Paper start - Teleport passenger API
+         Set<io.papermc.paper.entity.TeleportFlag> flagSet = Set.of(flags);
+         boolean dismount = !flagSet.contains(io.papermc.paper.entity.TeleportFlag.EntityState.RETAIN_VEHICLE);
+@@ -1306,4 +1315,22 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+         }
+     }
+     // Paper end - broadcast hurt animation
++
++    @Override
++    public void setCollisionBorder(@Nullable WorldBorder border) {
++        net.minecraft.world.level.border.WorldBorder handleBorder = null;
++        if (border != null) {
++           handleBorder = new net.minecraft.world.level.border.WorldBorder();
++           handleBorder.setCenter(border.getCenter().getX(), border.getCenter().getZ());
++           handleBorder.setSize(border.getSize());
++        }
++
++        this.entity.setCollisionBorder(handleBorder);
++        collisionBorder = border;
++   }
++
++   @Override
++   public @Nullable WorldBorder getCollisionBorder() {
++      return collisionBorder;
++    }
+ }
