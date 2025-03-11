@@ -1763,18 +1763,34 @@
      @Override
      public void setLevelCallback(EntityInLevelCallback levelCallback) {
          this.levelCallback = levelCallback;
-@@ -3723,4 +_,14 @@
+@@ -3722,5 +_,30 @@
+         public boolean shouldSave() {
              return this.save;
          }
-     }
++    }
 +
 +    // Paper start - Expose entity id counter
 +    public static int nextEntityId() {
 +        return ENTITY_COUNTER.incrementAndGet();
 +    }
 +
++    public static int currentEntityId() {
++        return ENTITY_COUNTER.get();
++    }
++
 +    public boolean isTicking() {
 +        return ((ServerLevel) this.level).isPositionEntityTicking(this.blockPosition());
 +    }
 +    // Paper end - Expose entity id counter
++
++    @Nullable
++    private WorldBorder collisionBorder;
++
++    public @Nullable WorldBorder getCollisionBorder() {
++        return collisionBorder;
++    }
++
++    public void setCollisionBorder(@Nullable WorldBorder border) {
++        collisionBorder = border;
+     }
  }

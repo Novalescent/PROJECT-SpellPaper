@@ -23751,7 +23751,7 @@ index 841a41485af62470d833aba578069b19a0bd1e8d..409c1134327bfcc338c3ac5e658a83cc
      // CraftBukkit start
      public boolean isDebugging() {
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index f8c81d795b19e73d56d6e0196c75e441ab4c2bef..97a294d2f5c1ddf0af7ffec3e1425eb329c5751b 100644
+index ac7bc193f7ea63cbbba73df49f54a17ef7cdec40..d2db6e3a4af13984b0a790fb38e83c253914a973 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -433,7 +433,33 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -24255,7 +24255,7 @@ index b95de132c53f82d270de396787dda3be8bc6c910..656041c9539b6834b4d37b353eb6b810
  
      @FunctionalInterface
 diff --git a/net/minecraft/server/level/ChunkLevel.java b/net/minecraft/server/level/ChunkLevel.java
-index e823b8aac00158892538083bc877ccf99895909a..7d871318065f19540748363809de82652613e733 100644
+index 6a9fc4211dc1377b67a793004a3150d7e6b7f230..de7f4228356227369b50c33026acf17039e406bc 100644
 --- a/net/minecraft/server/level/ChunkLevel.java
 +++ b/net/minecraft/server/level/ChunkLevel.java
 @@ -7,8 +7,8 @@ import net.minecraft.world.level.chunk.status.ChunkStep;
@@ -25886,7 +25886,7 @@ index 8ec20e372570d5eb720cdcdaed9c92946033be9b..5eab6179ce3913cb4e4d424f910ba423
 +    }*/  // Paper - rewrite chunk system
  }
 diff --git a/net/minecraft/server/level/GenerationChunkHolder.java b/net/minecraft/server/level/GenerationChunkHolder.java
-index cb66209c64b855dedf2e4e114a7716da13bc4587..da1366fdc4889d6a3befd43d81a19a816ed4cbe9 100644
+index e6a0edade00e732a2c2848f1f8c2e05431cd7e08..e84a170f3e1fea31ba60b4fe27df26a3c7aa6b2a 100644
 --- a/net/minecraft/server/level/GenerationChunkHolder.java
 +++ b/net/minecraft/server/level/GenerationChunkHolder.java
 @@ -27,13 +27,7 @@ public abstract class GenerationChunkHolder {
@@ -26735,7 +26735,7 @@ index da793ad12565c36fffb26eb771ff68c76632caf7..db06f966077928419bfe469260f04d7d
          if (!passengers.equals(this.lastPassengers)) {
              this.broadcastAndSend(new ClientboundSetPassengersPacket(this.entity)); // CraftBukkit
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 400b56657414177cd76a7b94c426dc7c886aa957..a275b17d0852d9d9bc850614713244e580ae81f1 100644
+index d1f235ebd835f58cf0c703c3a64d29825d98e183..080091efc19bc768bb9a660f366c42e831225505 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -170,7 +170,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
@@ -27546,7 +27546,7 @@ index f054ea710108e5017bc48fdda5f180a04f5b55e2..f44600604a7bf68c990cd74a1ac2d790
          super(level, level.getSharedSpawnPos(), level.getSharedSpawnAngle(), gameProfile);
          this.textFilter = server.createTextFilterForPlayer(this);
 diff --git a/net/minecraft/server/level/ThreadedLevelLightEngine.java b/net/minecraft/server/level/ThreadedLevelLightEngine.java
-index 11a264ef2f43c2b00741397c9c9ea5393afad6ab..5c9ac44a3b4bc8e047feaf61a94eb163761498a2 100644
+index f28386a1b7c10f37c96168ef7492a7d4d489a31f..adf50bebe40a63045e50bfd7419c8a37af0a37f0 100644
 --- a/net/minecraft/server/level/ThreadedLevelLightEngine.java
 +++ b/net/minecraft/server/level/ThreadedLevelLightEngine.java
 @@ -22,23 +22,134 @@ import net.minecraft.world.level.chunk.LightChunkGetter;
@@ -27879,7 +27879,7 @@ index 11a264ef2f43c2b00741397c9c9ea5393afad6ab..5c9ac44a3b4bc8e047feaf61a94eb163
  
      static enum TaskType {
 diff --git a/net/minecraft/server/level/Ticket.java b/net/minecraft/server/level/Ticket.java
-index e574f217386d677400b4c093d50261045df06d5c..ed8a3d5bd25909ee4648b1ec2ee66878198a1d8a 100644
+index e9ad481ed9ca8f1c7e35c09d336fb79a663efd9c..146634a20fa24af1a5574fd06050537ab780b98f 100644
 --- a/net/minecraft/server/level/Ticket.java
 +++ b/net/minecraft/server/level/Ticket.java
 @@ -2,13 +2,25 @@ package net.minecraft.server.level;
@@ -27998,7 +27998,7 @@ index 5d88b2790710a885957ffcffc02fb99c917123c5..7d1d4abfb04829d8c4722e326c6c6b8f
          for (ServerLevel serverLevel : this.server.getAllLevels()) {
              if (serverLevel != null) {
 diff --git a/net/minecraft/util/BitStorage.java b/net/minecraft/util/BitStorage.java
-index 32fe9b22e1d3a422dd80c64d61156dbc7241ba20..02502d50f0255f5bbcc0ecb965abb48cc1a112da 100644
+index 0f8f43a37351567e24c5881a12cb1d5a6d468ba4..d7689477152bc9b0879e4ee6f8b305719dbbc2de 100644
 --- a/net/minecraft/util/BitStorage.java
 +++ b/net/minecraft/util/BitStorage.java
 @@ -2,7 +2,7 @@ package net.minecraft.util;
@@ -28034,7 +28034,7 @@ index 32fe9b22e1d3a422dd80c64d61156dbc7241ba20..02502d50f0255f5bbcc0ecb965abb48c
 +    // Paper end - block counting
  }
 diff --git a/net/minecraft/util/CrudeIncrementalIntIdentityHashBiMap.java b/net/minecraft/util/CrudeIncrementalIntIdentityHashBiMap.java
-index 4a7c83c56dfbff59af71c3cd2fa4205c9a22bdc7..f28fbf81a417a678726d3f77b3999054676d522e 100644
+index 003abc19a2286c3f53461899db463a2959fde7e3..7bbe5c67a9575564f975f9c5fac93ead25164f0e 100644
 --- a/net/minecraft/util/CrudeIncrementalIntIdentityHashBiMap.java
 +++ b/net/minecraft/util/CrudeIncrementalIntIdentityHashBiMap.java
 @@ -7,7 +7,7 @@ import java.util.Iterator;
@@ -28250,7 +28250,7 @@ index 6fb3a3f167d8cbaa78135af0c180b592661e2c1d..e6306a68c8652d4c5d22d5ecb1416f5f
          InitializationException(String message) {
              super(message);
 diff --git a/net/minecraft/util/SortedArraySet.java b/net/minecraft/util/SortedArraySet.java
-index 2c6b35b86eed9002016b8228c3195f8033d219ca..339b19e88567be382e550ed54477fabd58d51faa 100644
+index 9512f0c0eeede9d7d2c2afe6d150ad92af75e1de..673668b831def0db439ebfc8d857846985159480 100644
 --- a/net/minecraft/util/SortedArraySet.java
 +++ b/net/minecraft/util/SortedArraySet.java
 @@ -8,12 +8,89 @@ import java.util.Iterator;
@@ -28372,7 +28372,7 @@ index 8cc5c0716392ba06501542ff5cbe71ee43979e5d..09fd99c9cbd23b5f3c899bfb00c9b896
 +    // Paper end - block counting
  }
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 994791a83ca6712db3e74ca9aba4bfcd95a0ec6d..1b54cf07616a10d93e9336dbd299ba5f09678a28 100644
+index 95f2d5699b5f5bc5e89347a6b65286e5877b0c4a..db2955ce598843c0b496313a2f479fab5ff19c0d 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -135,7 +135,7 @@ import net.minecraft.world.scores.ScoreHolder;
@@ -29114,7 +29114,7 @@ index 994791a83ca6712db3e74ca9aba4bfcd95a0ec6d..1b54cf07616a10d93e9336dbd299ba5f
  
      @Override
 diff --git a/net/minecraft/world/entity/ai/village/poi/PoiManager.java b/net/minecraft/world/entity/ai/village/poi/PoiManager.java
-index 7d590dd06cc69c0925d22708425520c38e3cda25..5c5724f5e3ad640f55aecbc1d8f71d1f59ecdc62 100644
+index 1575a4a6884a7e1cd3f2db5b64d83a12b359dcf3..bc1c6b63b6d3e6fe891213a8709b8df100fc4f71 100644
 --- a/net/minecraft/world/entity/ai/village/poi/PoiManager.java
 +++ b/net/minecraft/world/entity/ai/village/poi/PoiManager.java
 @@ -38,12 +38,137 @@ import net.minecraft.world.level.chunk.storage.RegionStorageInfo;
@@ -29320,7 +29320,7 @@ index 7d590dd06cc69c0925d22708425520c38e3cda25..5c5724f5e3ad640f55aecbc1d8f71d1f
      }
  
 diff --git a/net/minecraft/world/entity/ai/village/poi/PoiSection.java b/net/minecraft/world/entity/ai/village/poi/PoiSection.java
-index 324cc0686f0f5b1371b2bbea5b8c8fdb1f363006..39cd1e3d8192d7077d6b7864d33933097cc6b986 100644
+index c4d67cd517930d4af9058a5340e10879dea88b6e..05cfaa4142a70425f3a6f349308a87c0997fb349 100644
 --- a/net/minecraft/world/entity/ai/village/poi/PoiSection.java
 +++ b/net/minecraft/world/entity/ai/village/poi/PoiSection.java
 @@ -23,13 +23,27 @@ import net.minecraft.core.SectionPos;
@@ -30892,7 +30892,7 @@ index 21b9021df95d3611ad17c9fd5f429f97e824ed2f..f44461f92a10cbfdb8fcdbc3a2442e52
  
      public boolean shouldFreeze(LevelReader level, BlockPos pos) {
 diff --git a/net/minecraft/world/level/biome/BiomeManager.java b/net/minecraft/world/level/biome/BiomeManager.java
-index 8d98cba3830dc5dfb5cae9a6f5fedfffee0d2cd8..73962e79a0f3d892e3155443a1b84508b0f4042e 100644
+index ca4312f36b305f344f5c421100725720533ded4d..c87656b953278b01ceb3c18810afc271c88638ea 100644
 --- a/net/minecraft/world/level/biome/BiomeManager.java
 +++ b/net/minecraft/world/level/biome/BiomeManager.java
 @@ -98,8 +98,7 @@ public class BiomeManager {
@@ -31051,7 +31051,7 @@ index fa816de449a6077c05fee76835a1625f5b2008ac..5473b4006f7e0266ea11a7b05cef78a1
  
          public Block getBlock() {
 diff --git a/net/minecraft/world/level/block/state/StateHolder.java b/net/minecraft/world/level/block/state/StateHolder.java
-index 2f2dbf02a9732a7e640a6c730d4fc1443e723933..098518383d2c07491e047749ce3a834e98b85b1d 100644
+index df42d08ea36e138721549fa0f11daf215c94c855..36590104fc3b51bf85efb15ad0ed296016efacec 100644
 --- a/net/minecraft/world/level/block/state/StateHolder.java
 +++ b/net/minecraft/world/level/block/state/StateHolder.java
 @@ -15,7 +15,7 @@ import java.util.stream.Collectors;
@@ -31178,14 +31178,15 @@ index 2f2dbf02a9732a7e640a6c730d4fc1443e723933..098518383d2c07491e047749ce3a834e
 -                    (S[]) property.getPossibleValues().stream().map(comparable -> possibleStateMap.get(this.makeNeighbourValues(property, comparable))).toArray()
 -                );
 -            }
+-
+-            this.neighbours = map;
 +        // Paper start - optimise blockstate property access
 +        final Map<Map<Property<?>, Comparable<?>>, S> map = possibleStateMap;
 +        if (this.optimisedTable.isLoaded()) {
 +            return;
 +        }
 +        this.optimisedTable.loadInTable(map);
- 
--            this.neighbours = map;
++
 +        // de-duplicate the tables
 +        for (final Map.Entry<Map<Property<?>, Comparable<?>>, S> entry : map.entrySet()) {
 +            final S value = entry.getValue();
@@ -31217,7 +31218,7 @@ index 2f2dbf02a9732a7e640a6c730d4fc1443e723933..098518383d2c07491e047749ce3a834e
  
      protected static <O, S extends StateHolder<O, S>> Codec<S> codec(Codec<O> propertyMap, Function<O, S> holderFunction) {
 diff --git a/net/minecraft/world/level/block/state/properties/BooleanProperty.java b/net/minecraft/world/level/block/state/properties/BooleanProperty.java
-index 40c83ff614169be8ab988f3ab476eca93acee28d..654f14e0fd1920ec94300649719c2460918899e2 100644
+index e83a2731992d3dc69536d2b35c5491d7920bbe0b..9b5b8d0abd0e4c84adbb1077af762f92e34b1e59 100644
 --- a/net/minecraft/world/level/block/state/properties/BooleanProperty.java
 +++ b/net/minecraft/world/level/block/state/properties/BooleanProperty.java
 @@ -3,13 +3,23 @@ package net.minecraft.world.level.block.state.properties;
@@ -32113,7 +32114,7 @@ index a7fabde0f32f09d7f7bed65576ce469f069a21fa..412e7b1cf8c24f0ddf6d174967bedad5
  
      public void readBiomes(FriendlyByteBuf buffer) {
 diff --git a/net/minecraft/world/level/chunk/LinearPalette.java b/net/minecraft/world/level/chunk/LinearPalette.java
-index 5ae2f38dc613ac6129af49084980d064f14ff153..2073f6ff41aa570102621d183ee890b076267d54 100644
+index c79e854f688d0c6070669e3bd082de1be887057c..bb0f9d6fda014d9e0817e7a9bacb20e13c3f84be 100644
 --- a/net/minecraft/world/level/chunk/LinearPalette.java
 +++ b/net/minecraft/world/level/chunk/LinearPalette.java
 @@ -7,13 +7,20 @@ import net.minecraft.network.FriendlyByteBuf;
@@ -32139,7 +32140,7 @@ index 5ae2f38dc613ac6129af49084980d064f14ff153..2073f6ff41aa570102621d183ee890b0
          this.registry = registry;
          this.values = (T[])(new Object[1 << bits]);
 diff --git a/net/minecraft/world/level/chunk/Palette.java b/net/minecraft/world/level/chunk/Palette.java
-index b4b973e453a093dcc04a6b7257883aa0065e2a89..a80b2e9dceea423180a9c390d1970317dff4f1b0 100644
+index ccb65d8fa6ec09dbc7192b83e748bb729ba6415b..fbdd22333b4c4be1060f7e91266a4036a385fb85 100644
 --- a/net/minecraft/world/level/chunk/Palette.java
 +++ b/net/minecraft/world/level/chunk/Palette.java
 @@ -5,7 +5,7 @@ import java.util.function.Predicate;
@@ -32329,7 +32330,7 @@ index 8c333d7f390d823a7c7f303e2f444f52ec16f799..e66239e2da91bd3ddf358d239be79671
                      }
                  }
 diff --git a/net/minecraft/world/level/chunk/SingleValuePalette.java b/net/minecraft/world/level/chunk/SingleValuePalette.java
-index bc84910dbc688331efaea76972a6625014ff76f5..2ffae24b0cb1a20c7d5a8520f1b5197c2cedea11 100644
+index 40be4c6a4012b80936ceb969d668bcf0fd787ea1..dda2d0dbd6bca041a171dd68f3007d73861fc881 100644
 --- a/net/minecraft/world/level/chunk/SingleValuePalette.java
 +++ b/net/minecraft/world/level/chunk/SingleValuePalette.java
 @@ -8,12 +8,24 @@ import net.minecraft.network.FriendlyByteBuf;
@@ -32383,7 +32384,7 @@ index bc84910dbc688331efaea76972a6625014ff76f5..2ffae24b0cb1a20c7d5a8520f1b5197c
  
      @Override
 diff --git a/net/minecraft/world/level/chunk/status/ChunkPyramid.java b/net/minecraft/world/level/chunk/status/ChunkPyramid.java
-index 9c6f4aa173fa25f9c8a3852d91a4585e069236b6..b14001afe0bf841dac7d0a1d1568fd10f6086237 100644
+index bd2c53de5372c9c1efa8b1b584cf029340e6e9d3..f54f6e5aa40fc891838ff96cb524a01810ea5453 100644
 --- a/net/minecraft/world/level/chunk/status/ChunkPyramid.java
 +++ b/net/minecraft/world/level/chunk/status/ChunkPyramid.java
 @@ -54,7 +54,7 @@ public record ChunkPyramid(ImmutableList<ChunkStep> steps) {
@@ -32396,7 +32397,7 @@ index 9c6f4aa173fa25f9c8a3852d91a4585e069236b6..b14001afe0bf841dac7d0a1d1568fd10
          .step(ChunkStatus.FULL, builder -> builder.setTask(ChunkStatusTasks::full))
          .build();
 diff --git a/net/minecraft/world/level/chunk/status/ChunkStatus.java b/net/minecraft/world/level/chunk/status/ChunkStatus.java
-index 7a64b00ff31d1273d0b0b9a3cfd43808c88ef46a..c9d8a1c0a75c34ccd9f5cead02cccd776276f3cb 100644
+index 0d56888f2492c8539e0b24c6f003e374804bd5b6..0364bb17e11d87cdbbdd8b58b4d27380cbde5c2a 100644
 --- a/net/minecraft/world/level/chunk/status/ChunkStatus.java
 +++ b/net/minecraft/world/level/chunk/status/ChunkStatus.java
 @@ -11,7 +11,7 @@ import net.minecraft.resources.ResourceLocation;
@@ -32511,7 +32512,7 @@ index c953bc93de8a42bcc12b7e8f46b3ae804e54964e..2ccbdfdcf81556306e098277ecf119d5
          }
      }
 diff --git a/net/minecraft/world/level/chunk/status/ChunkStep.java b/net/minecraft/world/level/chunk/status/ChunkStep.java
-index 7a4d299d2ce36982204e30de9278ddfd5b37c3df..b8348976e80578d9eff64eea68c04c603fed49ad 100644
+index d7dced1e3d545dd9ebe79918bd421acc8bab831a..52ffdc700d9d69c1f5784e9be4a1dd97e564ac9a 100644
 --- a/net/minecraft/world/level/chunk/status/ChunkStep.java
 +++ b/net/minecraft/world/level/chunk/status/ChunkStep.java
 @@ -11,9 +11,50 @@ import net.minecraft.util.profiling.jfr.callback.ProfiledDuration;
@@ -32751,7 +32752,7 @@ index 5ba7f724687401c9ea1756a6491498e03548a257..64343a3f6e6009eed5b392482ec053be
      }
  }
 diff --git a/net/minecraft/world/level/chunk/storage/EntityStorage.java b/net/minecraft/world/level/chunk/storage/EntityStorage.java
-index c3c9771138cb1712ea429d8c45596220830314eb..da05fb780c55381a7a08ced51d01764a645740b2 100644
+index 9918e333290933706636e6e5e6971ffc964e3ce9..8ecc4b55d83867257e096f25366fb0d9639bf113 100644
 --- a/net/minecraft/world/level/chunk/storage/EntityStorage.java
 +++ b/net/minecraft/world/level/chunk/storage/EntityStorage.java
 @@ -71,12 +71,12 @@ public class EntityStorage implements EntityPersistentStorage<Entity> {
@@ -32770,7 +32771,7 @@ index c3c9771138cb1712ea429d8c45596220830314eb..da05fb780c55381a7a08ced51d01764a
      }
  
 diff --git a/net/minecraft/world/level/chunk/storage/IOWorker.java b/net/minecraft/world/level/chunk/storage/IOWorker.java
-index 889e188e920edb284f04b264bcdd06146f54a4cb..2199a9e2a0141c646d108f2687a27f1d165453c5 100644
+index fb0808b602747e452589eeaa24702acd0ec89670..37d5b45df280d55042aafd98ba17aeeeab771200 100644
 --- a/net/minecraft/world/level/chunk/storage/IOWorker.java
 +++ b/net/minecraft/world/level/chunk/storage/IOWorker.java
 @@ -30,7 +30,7 @@ public class IOWorker implements ChunkScanAccess, AutoCloseable {
@@ -33183,7 +33184,7 @@ index 51bf310423013d0ae9d3202d66e36a053a767197..e35bb5534e2fbd2e30154a15ff6d39ba
  
      public RegionStorageInfo info() {
 diff --git a/net/minecraft/world/level/chunk/storage/SectionStorage.java b/net/minecraft/world/level/chunk/storage/SectionStorage.java
-index 7dc1ffffd9d0fec54dbc254c154ee85ee750174d..778bd73a938c94ecb85ca0f8b686ff4e1baee040 100644
+index ebd3a95b4fefba1b4f15bb7ef31da488ba308256..639536d437b4793168f45630165ba0e3c06f23c5 100644
 --- a/net/minecraft/world/level/chunk/storage/SectionStorage.java
 +++ b/net/minecraft/world/level/chunk/storage/SectionStorage.java
 @@ -40,10 +40,10 @@ import net.minecraft.world.level.ChunkPos;
@@ -33614,7 +33615,7 @@ index 3b55e7fb27d680204b8621666ae9200870def3eb..879d411775a2fece1d8a970300cb3a55
      }
  }
 diff --git a/net/minecraft/world/level/chunk/storage/SimpleRegionStorage.java b/net/minecraft/world/level/chunk/storage/SimpleRegionStorage.java
-index 41ddaceb7485626b1f2ee258c2142eb3114c106e..f883c6400281788982403d0af3ee28613e9a29b1 100644
+index 009f282549ddbaea5ec99a99aceb0619021cf9c4..ca48a50266078d0d8d2d9fee8d6b3f322b469f60 100644
 --- a/net/minecraft/world/level/chunk/storage/SimpleRegionStorage.java
 +++ b/net/minecraft/world/level/chunk/storage/SimpleRegionStorage.java
 @@ -14,7 +14,7 @@ import net.minecraft.util.datafix.DataFixTypes;
@@ -33627,7 +33628,7 @@ index 41ddaceb7485626b1f2ee258c2142eb3114c106e..f883c6400281788982403d0af3ee2861
      private final DataFixTypes dataFixType;
  
 diff --git a/net/minecraft/world/level/entity/EntityTickList.java b/net/minecraft/world/level/entity/EntityTickList.java
-index 342c83309b19c64d86e0dd97c1756c96be52772b..423779a2b690f387a4f0bd07b97b50e0baefda76 100644
+index 3050987ffeae7cdcd92ba7ade0b0a33298809920..de85272650aafcd36b0124c54772a1f9a3796284 100644
 --- a/net/minecraft/world/level/entity/EntityTickList.java
 +++ b/net/minecraft/world/level/entity/EntityTickList.java
 @@ -9,52 +9,38 @@ import javax.annotation.Nullable;
@@ -33814,7 +33815,7 @@ index 06b54c0bec4031689d5c2da5cfea4ef28dbd16bc..f7dc4957b38878ddd3bfc7546be8a4e0
              map.computeInt(structure, (structure1, integer) -> integer == null ? 1 : integer + 1);
              return map;
 diff --git a/net/minecraft/world/level/lighting/LevelLightEngine.java b/net/minecraft/world/level/lighting/LevelLightEngine.java
-index ca23af013967b50420ebee178878ea79333de53b..d41b9266625ca6c5e32c5126f35a1f7733159cfc 100644
+index ad811d043ab66279b9a0fed914fc5735df6a57d6..dec0f270ffc080eab0dbc8cf0cec846901bdca59 100644
 --- a/net/minecraft/world/level/lighting/LevelLightEngine.java
 +++ b/net/minecraft/world/level/lighting/LevelLightEngine.java
 @@ -9,151 +9,111 @@ import net.minecraft.world.level.LightLayer;
@@ -34271,7 +34272,7 @@ index d2d71b22666639c003d86a6b6403fcbd2912c5af..481cb46973acb9785fdee5732e98aac5
  
      @Nullable
 diff --git a/net/minecraft/world/phys/AABB.java b/net/minecraft/world/phys/AABB.java
-index 047e1fd078d7f49a2547daeca9eec31306d25dd0..85148858db1fd5e9da8bbdde4b0d84110d80e373 100644
+index 91a9dc12b86bc2319b8dd2db0d4cfbd00cfec4ef..bc0d28428d2e2a103e98b50806a1a1cd99269c38 100644
 --- a/net/minecraft/world/phys/AABB.java
 +++ b/net/minecraft/world/phys/AABB.java
 @@ -314,7 +314,7 @@ public class AABB {
@@ -34284,7 +34285,7 @@ index 047e1fd078d7f49a2547daeca9eec31306d25dd0..85148858db1fd5e9da8bbdde4b0d8411
      }
  
 diff --git a/net/minecraft/world/phys/shapes/ArrayVoxelShape.java b/net/minecraft/world/phys/shapes/ArrayVoxelShape.java
-index adb5f1be35d3a712499076719a1bb819ef52b9a8..39a634e1392239e17818a11750ba869ea7d195ce 100644
+index 042b3db108547fa248507112736c7cf46d48da7c..68face7d6080b408f933b32a53001d4702d3023d 100644
 --- a/net/minecraft/world/phys/shapes/ArrayVoxelShape.java
 +++ b/net/minecraft/world/phys/shapes/ArrayVoxelShape.java
 @@ -20,7 +20,7 @@ public class ArrayVoxelShape extends VoxelShape {
@@ -34305,7 +34306,7 @@ index adb5f1be35d3a712499076719a1bb819ef52b9a8..39a634e1392239e17818a11750ba869e
  
      @Override
 diff --git a/net/minecraft/world/phys/shapes/BitSetDiscreteVoxelShape.java b/net/minecraft/world/phys/shapes/BitSetDiscreteVoxelShape.java
-index 14a12bdaa428556fa7b0c43e37b79699ae2fcb92..3a56e4ad9b3cba0cdf4bc373f7d0457d8643fdc4 100644
+index 375b498f28cfa06a1878075df2c953abd07a172e..1a397d6e2a1d2b8016b25e5d838b36b77859730e 100644
 --- a/net/minecraft/world/phys/shapes/BitSetDiscreteVoxelShape.java
 +++ b/net/minecraft/world/phys/shapes/BitSetDiscreteVoxelShape.java
 @@ -4,13 +4,13 @@ import java.util.BitSet;
@@ -34335,6 +34336,19 @@ index 14a12bdaa428556fa7b0c43e37b79699ae2fcb92..3a56e4ad9b3cba0cdf4bc373f7d0457d
  
 -    protected static void forAllBoxes(DiscreteVoxelShape shape, DiscreteVoxelShape.IntLineConsumer consumer, boolean combine) {
 -        BitSetDiscreteVoxelShape bitSetDiscreteVoxelShape = new BitSetDiscreteVoxelShape(shape);
+-
+-        for (int i = 0; i < bitSetDiscreteVoxelShape.ySize; i++) {
+-            for (int i1 = 0; i1 < bitSetDiscreteVoxelShape.xSize; i1++) {
+-                int i2 = -1;
+-
+-                for (int i3 = 0; i3 <= bitSetDiscreteVoxelShape.zSize; i3++) {
+-                    if (bitSetDiscreteVoxelShape.isFullWide(i1, i, i3)) {
+-                        if (combine) {
+-                            if (i2 == -1) {
+-                                i2 = i3;
+-                            }
+-                        } else {
+-                            consumer.consume(i1, i, i3, i1 + 1, i + 1, i3 + 1);
 +    // Paper start - optimise collisions
 +    public static void forAllBoxes(final DiscreteVoxelShape shape, final DiscreteVoxelShape.IntLineConsumer consumer, final boolean mergeAdjacent) {
 +        // Paper - remove debug
@@ -34374,21 +34388,10 @@ index 14a12bdaa428556fa7b0c43e37b79699ae2fcb92..3a56e4ad9b3cba0cdf4bc373f7d0457d
 +        } else {
 +            // same notes about loop order as the above
 +            // this branch is actually important to optimise, as it affects uncached toAabbs() (which affects optimize())
- 
--        for (int i = 0; i < bitSetDiscreteVoxelShape.ySize; i++) {
--            for (int i1 = 0; i1 < bitSetDiscreteVoxelShape.xSize; i1++) {
--                int i2 = -1;
++
 +            // only clone when we may write to it
 +            bitset = ca.spottedleaf.moonrise.common.util.MixinWorkarounds.clone(bitset);
- 
--                for (int i3 = 0; i3 <= bitSetDiscreteVoxelShape.zSize; i3++) {
--                    if (bitSetDiscreteVoxelShape.isFullWide(i1, i, i3)) {
--                        if (combine) {
--                            if (i2 == -1) {
--                                i2 = i3;
--                            }
--                        } else {
--                            consumer.consume(i1, i, i3, i1 + 1, i + 1, i3 + 1);
++
 +            for (int y = 0; y < sizeY; ++y, indexY += incY) {
 +                indexX = indexY;
 +                for (int x = 0; x < sizeX; ++x, indexX += incX) {
@@ -34467,7 +34470,7 @@ index 14a12bdaa428556fa7b0c43e37b79699ae2fcb92..3a56e4ad9b3cba0cdf4bc373f7d0457d
      private boolean isZStripFull(int zMin, int zMax, int x, int y) {
          return x < this.xSize && y < this.ySize && this.storage.nextClearBit(this.getIndex(x, y, zMin)) >= this.getIndex(x, y, zMax);
 diff --git a/net/minecraft/world/phys/shapes/CubeVoxelShape.java b/net/minecraft/world/phys/shapes/CubeVoxelShape.java
-index f6b6481591e009de80f6b6318d35f193aabb7df3..e9b5069dcd572966b2f5aa220cef30e7a328fa2c 100644
+index 0950f78fd4ea9ad2e65c9e72d7406cc54cc5fa10..f3ccefde3392c907408054c6baec4781e1d72955 100644
 --- a/net/minecraft/world/phys/shapes/CubeVoxelShape.java
 +++ b/net/minecraft/world/phys/shapes/CubeVoxelShape.java
 @@ -7,6 +7,7 @@ import net.minecraft.util.Mth;
@@ -34479,7 +34482,7 @@ index f6b6481591e009de80f6b6318d35f193aabb7df3..e9b5069dcd572966b2f5aa220cef30e7
  
      @Override
 diff --git a/net/minecraft/world/phys/shapes/DiscreteVoxelShape.java b/net/minecraft/world/phys/shapes/DiscreteVoxelShape.java
-index 4fc61b329ccb7c9aeb6105dc53d71545a3baea89..309a34f192f7737204ce7a5c3b4004bdd83842f2 100644
+index 922ccf2ac79a7159cd68dce3cca8454eaa53c661..7501318a74486b324058e1eafc546e64a78f2b34 100644
 --- a/net/minecraft/world/phys/shapes/DiscreteVoxelShape.java
 +++ b/net/minecraft/world/phys/shapes/DiscreteVoxelShape.java
 @@ -3,12 +3,79 @@ package net.minecraft.world.phys.shapes;
@@ -34564,7 +34567,7 @@ index 4fc61b329ccb7c9aeb6105dc53d71545a3baea89..309a34f192f7737204ce7a5c3b4004bd
          if (xSize >= 0 && ySize >= 0 && zSize >= 0) {
              this.xSize = xSize;
 diff --git a/net/minecraft/world/phys/shapes/OffsetDoubleList.java b/net/minecraft/world/phys/shapes/OffsetDoubleList.java
-index ac1488875537421b74f0c491c9b7a40e75539c92..9eb27eb8d6dcaad6ce02f8ce4546acc224c4196f 100644
+index 3742f27700da12d05833cad4c1879e1bd640ba90..43a0c49b08a676b139ff2e68f4e9ceec846fb953 100644
 --- a/net/minecraft/world/phys/shapes/OffsetDoubleList.java
 +++ b/net/minecraft/world/phys/shapes/OffsetDoubleList.java
 @@ -4,8 +4,8 @@ import it.unimi.dsi.fastutil.doubles.AbstractDoubleList;
@@ -34579,7 +34582,7 @@ index ac1488875537421b74f0c491c9b7a40e75539c92..9eb27eb8d6dcaad6ce02f8ce4546acc2
      public OffsetDoubleList(DoubleList delegate, double offset) {
          this.delegate = delegate;
 diff --git a/net/minecraft/world/phys/shapes/Shapes.java b/net/minecraft/world/phys/shapes/Shapes.java
-index e759221fb54aa510d2d8bbba47e1d794367aec6d..5665cfaae4fc9e72b77fd41e16e7f64460b099b0 100644
+index 858e412aae62a561996f761d12da1c102cd1e541..e01bcce54505cbc638e3bb74a93419f9ed6658aa 100644
 --- a/net/minecraft/world/phys/shapes/Shapes.java
 +++ b/net/minecraft/world/phys/shapes/Shapes.java
 @@ -16,9 +16,15 @@ public final class Shapes {
@@ -34670,10 +34673,7 @@ index e759221fb54aa510d2d8bbba47e1d794367aec6d..5665cfaae4fc9e72b77fd41e16e7f644
 -                    DoubleArrayList.wrap(new double[]{minX, maxX}),
 -                    DoubleArrayList.wrap(new double[]{minY, maxY}),
 -                    DoubleArrayList.wrap(new double[]{minZ, maxZ})
-+                    minX == 0.0 && maxX == 1.0 ? ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.ZERO_ONE : DoubleArrayList.wrap(new double[] { minX, maxX }),
-+                    minY == 0.0 && maxY == 1.0 ? ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.ZERO_ONE : DoubleArrayList.wrap(new double[] { minY, maxY }),
-+                    minZ == 0.0 && maxZ == 1.0 ? ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.ZERO_ONE : DoubleArrayList.wrap(new double[] { minZ, maxZ })
-                 );
+-                );
 -            } else if (i == 0 && i1 == 0 && i2 == 0) {
 -                return block();
 -            } else {
@@ -34690,7 +34690,10 @@ index e759221fb54aa510d2d8bbba47e1d794367aec6d..5665cfaae4fc9e72b77fd41e16e7f644
 -                    (int)Math.round(maxX * i3),
 -                    (int)Math.round(maxY * i4),
 -                    (int)Math.round(maxZ * i5)
--                );
++                    minX == 0.0 && maxX == 1.0 ? ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.ZERO_ONE : DoubleArrayList.wrap(new double[] { minX, maxX }),
++                    minY == 0.0 && maxY == 1.0 ? ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.ZERO_ONE : DoubleArrayList.wrap(new double[] { minY, maxY }),
++                    minZ == 0.0 && maxZ == 1.0 ? ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.ZERO_ONE : DoubleArrayList.wrap(new double[] { minZ, maxZ })
+                 );
 -                return new CubeVoxelShape(bitSetDiscreteVoxelShape);
              }
          } else {
@@ -34977,7 +34980,7 @@ index e759221fb54aa510d2d8bbba47e1d794367aec6d..5665cfaae4fc9e72b77fd41e16e7f644
  
      @VisibleForTesting
 diff --git a/net/minecraft/world/phys/shapes/SliceShape.java b/net/minecraft/world/phys/shapes/SliceShape.java
-index 79f7f04207891dd98cc0b2d93ecb2e07c8baa7b6..7ca12213c10f962ff597a8d51413a17b1827bbb4 100644
+index 28e59e59ba7452d1cbe0b5ae003ead98a2a094c7..d41c9e4b5c51a91af949b470e49c48465593f6fd 100644
 --- a/net/minecraft/world/phys/shapes/SliceShape.java
 +++ b/net/minecraft/world/phys/shapes/SliceShape.java
 @@ -12,6 +12,7 @@ public class SliceShape extends VoxelShape {
@@ -34989,7 +34992,7 @@ index 79f7f04207891dd98cc0b2d93ecb2e07c8baa7b6..7ca12213c10f962ff597a8d51413a17b
  
      private static DiscreteVoxelShape makeSlice(DiscreteVoxelShape shape, Direction.Axis axis, int index) {
 diff --git a/net/minecraft/world/phys/shapes/VoxelShape.java b/net/minecraft/world/phys/shapes/VoxelShape.java
-index 006065c32baf3b1ddc5647196cb9f863c7969064..2c7e70675b62cb753447d2acebf2f36cdac74973 100644
+index 219a49f3155f182a4b63f6c4ef0f676451f510c7..006d0f5d6b92a1504db410e3743e66143de99cd9 100644
 --- a/net/minecraft/world/phys/shapes/VoxelShape.java
 +++ b/net/minecraft/world/phys/shapes/VoxelShape.java
 @@ -15,61 +15,546 @@ import net.minecraft.world.phys.AABB;
@@ -35894,7 +35897,7 @@ index 006065c32baf3b1ddc5647196cb9f863c7969064..2c7e70675b62cb753447d2acebf2f36c
      protected double collideX(AxisCycle movementAxis, AABB collisionBox, double desiredOffset) {
          if (this.isEmpty()) {
 diff --git a/net/minecraft/world/ticks/LevelChunkTicks.java b/net/minecraft/world/ticks/LevelChunkTicks.java
-index 5b6bd88a5bbbce6cce351938418eba4326e41002..faf45ac459f7c25309d6ef6dce371d484a0dae7b 100644
+index f7e446e40716a69824c241ddb38229698bee59bf..a651dfbfee84e4a0bc99ba70f14bdaefd4d8ad78 100644
 --- a/net/minecraft/world/ticks/LevelChunkTicks.java
 +++ b/net/minecraft/world/ticks/LevelChunkTicks.java
 @@ -17,7 +17,7 @@ import net.minecraft.core.BlockPos;
