@@ -1,13 +1,18 @@
 --- a/net/minecraft/world/level/block/BambooSaplingBlock.java
 +++ b/net/minecraft/world/level/block/BambooSaplingBlock.java
-@@ -43,7 +_,7 @@
+@@ -42,13 +_,6 @@
+     }
  
      @Override
-     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+-    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
 -        if (random.nextInt(3) == 0 && level.isEmptyBlock(pos.above()) && level.getRawBrightness(pos.above(), 0) >= 9) {
-+        if (random.nextFloat() < (level.spigotConfig.bambooModifier / (100.0f * 3)) && level.isEmptyBlock(pos.above()) && level.getRawBrightness(pos.above(), 0) >= 9) { // Spigot - SPIGOT-7159: Better modifier resolution
-             this.growBamboo(level, pos);
-         }
+-            this.growBamboo(level, pos);
+-        }
+-    }
+-
+-    @Override
+     protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+         return level.getBlockState(pos.below()).is(BlockTags.BAMBOO_PLANTABLE_ON);
      }
 @@ -99,6 +_,6 @@
      }

@@ -10,11 +10,18 @@
              player.awardStat(Stats.INSPECT_HOPPER);
          }
  
-@@ -178,6 +_,7 @@
+@@ -174,14 +_,6 @@
+     @Override
+     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+         builder.add(FACING, ENABLED);
+-    }
+-
+-    @Override
+-    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+-        BlockEntity blockEntity = level.getBlockEntity(pos);
+-        if (blockEntity instanceof HopperBlockEntity) {
+-            HopperBlockEntity.entityInside(level, pos, state, entity, (HopperBlockEntity)blockEntity);
+-        }
+     }
  
      @Override
-     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-+        if (!new io.papermc.paper.event.entity.EntityInsideBlockEvent(entity.getBukkitEntity(), org.bukkit.craftbukkit.block.CraftBlock.at(level, pos)).callEvent()) { return; } // Paper - Add EntityInsideBlockEvent
-         BlockEntity blockEntity = level.getBlockEntity(pos);
-         if (blockEntity instanceof HopperBlockEntity) {
-             HopperBlockEntity.entityInside(level, pos, state, entity, (HopperBlockEntity)blockEntity);

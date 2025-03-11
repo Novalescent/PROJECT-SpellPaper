@@ -1,0 +1,34 @@
+--- a/net/minecraft/world/level/block/FallingBlock.java
++++ b/net/minecraft/world/level/block/FallingBlock.java
+@@ -45,14 +_,6 @@
+         return super.updateShape(state, level, scheduledTickAccess, pos, direction, neighborPos, neighborState, random);
+     }
+ 
+-    @Override
+-    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+-        if (isFree(level.getBlockState(pos.below())) && pos.getY() >= level.getMinY()) {
+-            FallingBlockEntity fallingBlockEntity = FallingBlockEntity.fall(level, pos, state);
+-            this.falling(fallingBlockEntity);
+-        }
+-    }
+-
+     protected void falling(FallingBlockEntity entity) {
+     }
+ 
+@@ -62,16 +_,6 @@
+ 
+     public static boolean isFree(BlockState state) {
+         return state.isAir() || state.is(BlockTags.FIRE) || state.liquid() || state.canBeReplaced();
+-    }
+-
+-    @Override
+-    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+-        if (random.nextInt(16) == 0) {
+-            BlockPos blockPos = pos.below();
+-            if (isFree(level.getBlockState(blockPos))) {
+-                ParticleUtils.spawnParticleBelow(level, pos, random, new BlockParticleOption(ParticleTypes.FALLING_DUST, state));
+-            }
+-        }
+     }
+ 
+     public int getDustColor(BlockState state, BlockGetter level, BlockPos pos) {

@@ -1,6 +1,29 @@
 --- a/net/minecraft/world/level/block/TurtleEggBlock.java
 +++ b/net/minecraft/world/level/block/TurtleEggBlock.java
-@@ -74,6 +_,19 @@
+@@ -51,29 +_,24 @@
+         this.registerDefaultState(this.stateDefinition.any().setValue(HATCH, Integer.valueOf(0)).setValue(EGGS, Integer.valueOf(1)));
+     }
+ 
+-    @Override
+-    public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
+-        if (!entity.isSteppingCarefully()) {
+-            this.destroyEgg(level, state, pos, entity, 100);
+-        }
+-
+-        super.stepOn(level, pos, state, entity);
+-    }
+-
+-    @Override
+-    public void fallOn(Level level, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
+-        if (!(entity instanceof Zombie)) {
+-            this.destroyEgg(level, state, pos, entity, 3);
+-        }
+-
+-        super.fallOn(level, state, pos, entity, fallDistance);
+-    }
+-
+     private void destroyEgg(Level level, BlockState state, BlockPos pos, Entity entity, int chance) {
+         if (state.is(Blocks.TURTLE_EGG)
              && level instanceof ServerLevel serverLevel
              && this.canDestroyEgg(serverLevel, entity)
              && level.random.nextInt(chance) == 0) {
@@ -20,37 +43,40 @@
              this.decreaseEggs(serverLevel, pos, state);
          }
      }
-@@ -95,10 +_,20 @@
-         if (this.shouldUpdateHatchLevel(level) && onSand(level, pos)) {
-             int hatchValue = state.getValue(HATCH);
-             if (hatchValue < 2) {
-+                // CraftBukkit start - Call BlockGrowEvent
-+                if (!org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockGrowEvent(level, pos, state.setValue(TurtleEggBlock.HATCH, hatchValue + 1), 2)) {
-+                    return;
-+                }
-+                // CraftBukkit end
-                 level.playSound(null, pos, SoundEvents.TURTLE_EGG_CRACK, SoundSource.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
+@@ -90,33 +_,6 @@
+         }
+     }
+ 
+-    @Override
+-    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+-        if (this.shouldUpdateHatchLevel(level) && onSand(level, pos)) {
+-            int hatchValue = state.getValue(HATCH);
+-            if (hatchValue < 2) {
+-                level.playSound(null, pos, SoundEvents.TURTLE_EGG_CRACK, SoundSource.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
 -                level.setBlock(pos, state.setValue(HATCH, Integer.valueOf(hatchValue + 1)), 2);
-+                // level.setBlock(pos, state.setValue(HATCH, Integer.valueOf(hatchValue + 1)), 2); // CraftBukkit - handled above
-                 level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(state));
-             } else {
-+                // CraftBukkit start - Call BlockFadeEvent
-+                if (org.bukkit.craftbukkit.event.CraftEventFactory.callBlockFadeEvent(level, pos, Blocks.AIR.defaultBlockState()).isCancelled()) {
-+                    return;
-+                }
-+                // CraftBukkit end
-                 level.playSound(null, pos, SoundEvents.TURTLE_EGG_HATCH, SoundSource.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
-                 level.removeBlock(pos, false);
-                 level.gameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Context.of(state));
-@@ -110,7 +_,7 @@
-                         turtle.setAge(-24000);
-                         turtle.setHomePos(pos);
-                         turtle.moveTo(pos.getX() + 0.3 + i * 0.2, pos.getY(), pos.getZ() + 0.3, 0.0F, 0.0F);
+-                level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(state));
+-            } else {
+-                level.playSound(null, pos, SoundEvents.TURTLE_EGG_HATCH, SoundSource.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
+-                level.removeBlock(pos, false);
+-                level.gameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Context.of(state));
+-
+-                for (int i = 0; i < state.getValue(EGGS); i++) {
+-                    level.levelEvent(2001, pos, Block.getId(state));
+-                    Turtle turtle = EntityType.TURTLE.create(level, EntitySpawnReason.BREEDING);
+-                    if (turtle != null) {
+-                        turtle.setAge(-24000);
+-                        turtle.setHomePos(pos);
+-                        turtle.moveTo(pos.getX() + 0.3 + i * 0.2, pos.getY(), pos.getZ() + 0.3, 0.0F, 0.0F);
 -                        level.addFreshEntity(turtle);
-+                        level.addFreshEntity(turtle, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.EGG); // CraftBukkit
-                     }
-                 }
-             }
+-                    }
+-                }
+-            }
+-        }
+-    }
+-
+     public static boolean onSand(BlockGetter level, BlockPos pos) {
+         return isSand(level, pos.below());
+     }
 @@ -138,8 +_,8 @@
      }
  

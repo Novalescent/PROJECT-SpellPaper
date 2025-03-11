@@ -1,14 +1,20 @@
 --- a/net/minecraft/world/entity/monster/Spider.java
 +++ b/net/minecraft/world/entity/monster/Spider.java
-@@ -79,7 +_,7 @@
-     public void tick() {
-         super.tick();
-         if (!this.level().isClientSide) {
--            this.setClimbing(this.horizontalCollision);
-+            this.setClimbing(this.horizontalCollision && (this.level().paperConfig().entities.behavior.allowSpiderWorldBorderClimbing || !(io.papermc.paper.FeatureHooks.isSpiderCollidingWithWorldBorder(this) && this.level().getWorldBorder().isInsideCloseToBorder(this, this.getBoundingBox())))); // Paper - Add config option for spider worldborder climbing (Inflate by +EPSILON as collision will just barely place us outside border)
-         }
+@@ -75,14 +_,6 @@
+         builder.define(DATA_FLAGS_ID, (byte)0);
      }
  
+-    @Override
+-    public void tick() {
+-        super.tick();
+-        if (!this.level().isClientSide) {
+-            this.setClimbing(this.horizontalCollision);
+-        }
+-    }
+-
+     public static AttributeSupplier.Builder createAttributes() {
+         return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 16.0).add(Attributes.MOVEMENT_SPEED, 0.3F);
+     }
 @@ -121,7 +_,7 @@
  
      @Override

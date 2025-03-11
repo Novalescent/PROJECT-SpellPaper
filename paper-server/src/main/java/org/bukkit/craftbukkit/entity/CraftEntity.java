@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import io.papermc.paper.entity.LookAnchor;
+import javax.annotation.Nullable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -30,6 +31,7 @@ import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.WorldBorder;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.PistonMoveReaction;
 import org.bukkit.craftbukkit.CraftServer;
@@ -83,6 +85,8 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
         return this.apiScheduler;
     };
     // Paper end - Folia schedulers
+
+    private WorldBorder collisionBorder;
 
     public CraftEntity(final CraftServer server, final Entity entity) {
         this.server = server;
@@ -1333,4 +1337,23 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
         }
     }
     // Paper end - broadcast hurt animation
+
+
+    @Override
+    public void setCollisionBorder(@Nullable WorldBorder border) {
+        net.minecraft.world.level.border.WorldBorder handleBorder = null;
+        if (border != null) {
+            handleBorder = new net.minecraft.world.level.border.WorldBorder();
+            handleBorder.setCenter(border.getCenter().getX(), border.getCenter().getZ());
+            handleBorder.setSize(border.getSize());
+        }
+
+        this.entity.setCollisionBorder(handleBorder);
+        collisionBorder = border;
+    }
+
+    @Override
+    public @Nullable WorldBorder getCollisionBorder() {
+        return collisionBorder;
+    }
 }

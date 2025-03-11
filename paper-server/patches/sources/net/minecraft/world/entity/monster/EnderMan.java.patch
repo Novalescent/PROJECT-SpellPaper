@@ -57,20 +57,40 @@
                  this.setTarget(null);
                  this.teleport();
              }
-@@ -372,11 +_,13 @@
-             } else {
-                 boolean flag1 = flag && this.hurtWithCleanWater(level, damageSource, (ThrownPotion)damageSource.getDirectEntity(), amount);
+@@ -356,33 +_,6 @@
+         return this.entityData.get(DATA_CARRY_STATE).orElse(null);
+     }
  
-+                if (this.tryEscape(com.destroystokyo.paper.event.entity.EndermanEscapeEvent.Reason.INDIRECT)) { // Paper - EndermanEscapeEvent
-                 for (int i = 0; i < 64; i++) {
-                     if (this.teleport()) {
-                         return true;
-                     }
-                 }
-+                } // Paper - EndermanEscapeEvent
- 
-                 return flag1;
-             }
+-    @Override
+-    public boolean hurtServer(ServerLevel level, DamageSource damageSource, float amount) {
+-        if (this.isInvulnerableTo(level, damageSource)) {
+-            return false;
+-        } else {
+-            boolean flag = damageSource.getDirectEntity() instanceof ThrownPotion;
+-            if (!damageSource.is(DamageTypeTags.IS_PROJECTILE) && !flag) {
+-                boolean flag1 = super.hurtServer(level, damageSource, amount);
+-                if (!(damageSource.getEntity() instanceof LivingEntity) && this.random.nextInt(10) != 0) {
+-                    this.teleport();
+-                }
+-
+-                return flag1;
+-            } else {
+-                boolean flag1 = flag && this.hurtWithCleanWater(level, damageSource, (ThrownPotion)damageSource.getDirectEntity(), amount);
+-
+-                for (int i = 0; i < 64; i++) {
+-                    if (this.teleport()) {
+-                        return true;
+-                    }
+-                }
+-
+-                return flag1;
+-            }
+-        }
+-    }
+-
+     private boolean hurtWithCleanWater(ServerLevel level, DamageSource damageSource, ThrownPotion potion, float amount) {
+         ItemStack item = potion.getItem();
+         PotionContents potionContents = item.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
 @@ -401,6 +_,16 @@
          this.entityData.set(DATA_STARED_AT, true);
      }

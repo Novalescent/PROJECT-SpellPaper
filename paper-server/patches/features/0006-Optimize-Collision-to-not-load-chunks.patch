@@ -14,10 +14,10 @@ movement will load only the chunk the player enters anyways and avoids loading
 massive amounts of surrounding chunks due to large AABB lookups.
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 054ece1d539d69a4b7eec57e681179343c7e75c3..6f35067c64f378e955261e763f2bda9a0a6d0153 100644
+index 3f7b9d8bd368faf5a03f301f667173c869babdd1..97086b9f47a8bebbd646619e3fa243016515a7eb 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -218,6 +218,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -219,6 +219,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      // Paper end - Share random for entities to make them more random
      public org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason spawnReason; // Paper - Entity#getEntitySpawnReason
  

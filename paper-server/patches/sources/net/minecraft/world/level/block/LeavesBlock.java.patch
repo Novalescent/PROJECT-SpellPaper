@@ -1,17 +1,59 @@
 --- a/net/minecraft/world/level/block/LeavesBlock.java
 +++ b/net/minecraft/world/level/block/LeavesBlock.java
-@@ -63,6 +_,14 @@
+@@ -1,5 +_,6 @@
+ package net.minecraft.world.level.block;
+ 
++import com.destroystokyo.paper.event.block.BlockFallingParticleEvent;
+ import com.mojang.serialization.MapCodec;
+ import java.util.OptionalInt;
+ import net.minecraft.core.BlockPos;
+@@ -57,24 +_,16 @@
+ 
+     @Override
+     protected boolean isRandomlyTicking(BlockState state) {
+-        return state.getValue(DISTANCE) == 7 && !state.getValue(PERSISTENT);
++        return true;
+     }
+ 
      @Override
      protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-         if (this.decaying(state)) {
-+            // CraftBukkit start
-+            org.bukkit.event.block.LeavesDecayEvent event = new org.bukkit.event.block.LeavesDecayEvent(level.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ()));
+-        if (this.decaying(state)) {
+-            dropResources(state, level, pos);
+-            level.removeBlock(pos, false);
++        BlockPos below = pos.below();
++        if (FallingBlock.isFree(level.getBlockState(below))) {
++            BlockFallingParticleEvent event = new BlockFallingParticleEvent(level.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ()));
 +            level.getCraftServer().getPluginManager().callEvent(event);
-+
-+            if (event.isCancelled() || level.getBlockState(pos).getBlock() != this) {
-+                return;
-+            }
-+            // CraftBukkit end
-             dropResources(state, level, pos);
-             level.removeBlock(pos, false);
          }
+-    }
+-
+-    protected boolean decaying(BlockState state) {
+-        return !state.getValue(PERSISTENT) && state.getValue(DISTANCE) == 7;
+-    }
+-
+-    @Override
+-    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+-        level.setBlock(pos, updateDistance(state, level, pos), 3);
+     }
+ 
+     @Override
+@@ -135,19 +_,6 @@
+     @Override
+     protected FluidState getFluidState(BlockState state) {
+         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
+-    }
+-
+-    @Override
+-    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+-        if (level.isRainingAt(pos.above())) {
+-            if (random.nextInt(15) == 1) {
+-                BlockPos blockPos = pos.below();
+-                BlockState blockState = level.getBlockState(blockPos);
+-                if (!blockState.canOcclude() || !blockState.isFaceSturdy(level, blockPos, Direction.UP)) {
+-                    ParticleUtils.spawnParticleBelow(level, pos, random, ParticleTypes.DRIPPING_WATER);
+-                }
+-            }
+-        }
+     }
+ 
+     @Override

@@ -8,16 +8,18 @@
  
      @Override
      public MapCodec<? extends SaplingBlock> codec() {
-@@ -45,7 +_,7 @@
- 
-     @Override
-     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
--        if (level.getMaxLocalRawBrightness(pos.above()) >= 9 && random.nextInt(7) == 0) {
-+        if (level.getMaxLocalRawBrightness(pos.above()) >= 9 && random.nextFloat() < (level.spigotConfig.saplingModifier / (100.0f * 7))) { // Spigot - SPIGOT-7159: Better modifier resolution
-             this.advanceTree(level, pos, state, random);
-         }
+@@ -43,18 +_,37 @@
+         return SHAPE;
      }
-@@ -54,7 +_,33 @@
+ 
+-    @Override
+-    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+-        if (level.getMaxLocalRawBrightness(pos.above()) >= 9 && random.nextInt(7) == 0) {
+-            this.advanceTree(level, pos, state, random);
+-        }
+-    }
+-
+     public void advanceTree(ServerLevel level, BlockPos pos, BlockState state, RandomSource random) {
          if (state.getValue(STAGE) == 0) {
              level.setBlock(pos, state.cycle(STAGE), 4);
          } else {

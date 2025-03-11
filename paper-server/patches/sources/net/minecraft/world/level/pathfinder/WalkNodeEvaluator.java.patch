@@ -1,5 +1,18 @@
 --- a/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
 +++ b/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
+@@ -406,12 +_,6 @@
+                         pathType = PathType.BLOCKED;
+                     }
+ 
+-                    if (pathType == PathType.RAIL
+-                        && this.getPathType(context, blockPos.getX(), blockPos.getY(), blockPos.getZ()) != PathType.RAIL
+-                        && this.getPathType(context, blockPos.getX(), blockPos.getY() - 1, blockPos.getZ()) != PathType.RAIL) {
+-                        pathType = PathType.UNPASSABLE_RAIL;
+-                    }
+-
+                     set.add(pathType);
+                 }
+             }
 @@ -480,7 +_,12 @@
      }
  

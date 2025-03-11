@@ -11,6 +11,7 @@ import org.bukkit.Nameable;
 import org.bukkit.Server;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.WorldBorder;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.PistonMoveReaction;
 import org.bukkit.command.CommandSender;
@@ -1196,4 +1197,8 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
      */
     void broadcastHurtAnimation(@NotNull java.util.Collection<Player> players);
     // Paper end - broadcast hurt animation
+
+    void setCollisionBorder(@javax.annotation.Nullable WorldBorder border);
+
+    @Nullable WorldBorder getCollisionBorder();
 }

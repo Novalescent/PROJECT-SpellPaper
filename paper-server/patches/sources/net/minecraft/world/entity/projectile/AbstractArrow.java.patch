@@ -62,6 +62,17 @@
              this.inGroundTime = 0;
              Vec3 vec31 = this.position();
              if (this.isInWater()) {
+@@ -250,10 +_,6 @@
+                 this.applyEffectsFromBlocks();
+             }
+ 
+-            if (!this.isInWater()) {
+-                this.applyInertia(0.99F);
+-            }
+-
+             if (flag && !this.isInGround()) {
+                 this.applyGravity();
+             }
 @@ -275,12 +_,12 @@
  
              if (entityHitResult == null) {
