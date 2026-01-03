@@ -45,11 +45,13 @@ import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.WorldBorder;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.PistonMoveReaction;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftSound;
 import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.CraftWorldBorder;
 import org.bukkit.craftbukkit.block.CraftBlock;
 import org.bukkit.craftbukkit.persistence.CraftPersistentDataContainer;
 import org.bukkit.craftbukkit.persistence.CraftPersistentDataTypeRegistry;
@@ -1329,6 +1331,24 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
     @Override
     public boolean hasData(final @NotNull DataComponentType type) {
         return this.entity.get(io.papermc.paper.datacomponent.PaperDataComponentType.bukkitToMinecraft(type)) != null;
+    }
+
+
+    @Override
+    public void setCollisionBorder(@Nullable WorldBorder border) {
+        net.minecraft.world.level.border.WorldBorder handleBorder = null;
+        if (border != null) {
+            handleBorder = new net.minecraft.world.level.border.WorldBorder();
+            handleBorder.setCenter(border.getCenter().getX(), border.getCenter().getZ());
+            handleBorder.setSize(border.getSize());
+        }
+
+        this.entity.setCollisionBorder(handleBorder);
+    }
+
+    @Override
+    public @Nullable WorldBorder getCollisionBorder() {
+        return new CraftWorldBorder(this.entity.getCollisionBorder());
     }
 
 }
