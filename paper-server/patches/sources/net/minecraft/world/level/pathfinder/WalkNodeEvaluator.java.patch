@@ -1,5 +1,18 @@
 --- a/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
 +++ b/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
+@@ -403,12 +_,6 @@
+                         pathType = PathType.BLOCKED;
+                     }
+ 
+-                    if (pathType == PathType.RAIL
+-                        && this.getPathType(context, blockPos.getX(), blockPos.getY(), blockPos.getZ()) != PathType.RAIL
+-                        && this.getPathType(context, blockPos.getX(), blockPos.getY() - 1, blockPos.getZ()) != PathType.RAIL) {
+-                        pathType = PathType.UNPASSABLE_RAIL;
+-                    }
+-
+                     set.add(pathType);
+                 }
+             }
 @@ -477,7 +_,12 @@
      }
  
@@ -14,3 +27,12 @@
          Block block = blockState.getBlock();
          if (blockState.isAir()) {
              return PathType.OPEN;
+@@ -504,7 +_,7 @@
+                     return doorBlock.type().canOpenByHand() ? PathType.DOOR_WOOD_CLOSED : PathType.DOOR_IRON_CLOSED;
+                 }
+             } else if (block instanceof BaseRailBlock) {
+-                return PathType.RAIL;
++                return PathType.OPEN;
+             } else if (block instanceof LeavesBlock) {
+                 return PathType.LEAVES;
+             } else if (!blockState.is(BlockTags.FENCES)

@@ -23059,7 +23059,7 @@ index cda915fcb4822689f42b25280eb99aee082ddb74..094d2d528cb74b8f1d277cd780bba7f4
                  thread1 -> {
                      DedicatedServer dedicatedServer1 = new DedicatedServer(
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 0c9690298abeaa1e01a3e13d09bfaf39a375116f..df34832f5f35376a77aaecd802c70fa093e0d539 100644
+index ae4149e84e4207422bfc7a9ac893a453571cc0bf..a0195f64794ea22be892176b128d44b8dc7028cc 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -185,7 +185,7 @@ import net.minecraft.world.scores.ScoreboardSaveData;
@@ -23280,7 +23280,7 @@ index 0c9690298abeaa1e01a3e13d09bfaf39a375116f..df34832f5f35376a77aaecd802c70fa0
          profiler.pop(); // moonrise:run_all_chunk
          profiler.pop(); // moonrise:run_all_tasks
  
-@@ -1393,6 +1504,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1398,6 +1509,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
      private boolean pollTaskInternal() {
          if (super.pollTask()) {
@@ -23288,7 +23288,7 @@ index 0c9690298abeaa1e01a3e13d09bfaf39a375116f..df34832f5f35376a77aaecd802c70fa0
              return true;
          } else {
              boolean ret = false; // Paper - force execution of all worlds, do not just bias the first
-@@ -1534,6 +1646,13 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1539,6 +1651,13 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          // Paper - improve tick loop - moved into runAllTasksAtTickStart
          this.runAllTasksAtTickStart(); // Paper - improve tick loop
          this.tickServer(sprinting ? () -> false : this::haveTime);
@@ -23302,7 +23302,7 @@ index 0c9690298abeaa1e01a3e13d09bfaf39a375116f..df34832f5f35376a77aaecd802c70fa0
          this.tickFrame.end();
          this.recordEndOfTick(); // Paper - improve tick loop
          profilerFiller.pop();
-@@ -2559,6 +2678,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2564,6 +2683,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          }
      }
  
@@ -28137,10 +28137,10 @@ index 8cc5c0716392ba06501542ff5cbe71ee43979e5d..09fd99c9cbd23b5f3c899bfb00c9b896
 +    // Paper end - block counting
  }
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 519fbc86a33848a79981222c29de88191f848411..57cff20212f6d5f83d4b0169bf6aa185a403e1d3 100644
+index a7c8e78ae076b7a6d1735289a22a25217a802861..fa504b85bbede85145d52b32c6c621b37cd556db 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -152,7 +152,7 @@ import org.jetbrains.annotations.Contract;
+@@ -153,7 +153,7 @@ import org.jetbrains.annotations.Contract;
  import org.jspecify.annotations.Nullable;
  import org.slf4j.Logger;
  
@@ -28149,7 +28149,7 @@ index 519fbc86a33848a79981222c29de88191f848411..57cff20212f6d5f83d4b0169bf6aa185
      // CraftBukkit start
      private static final int CURRENT_LEVEL = 2;
      static boolean isLevelAtLeast(ValueInput input, int level) {
-@@ -161,7 +161,17 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -162,7 +162,17 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
  
      // Paper start - Share random for entities to make them more random
      public static RandomSource SHARED_RANDOM = new RandomRandomSource();
@@ -28168,7 +28168,7 @@ index 519fbc86a33848a79981222c29de88191f848411..57cff20212f6d5f83d4b0169bf6aa185
          private boolean locked = false;
  
          @Override
-@@ -174,61 +184,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -175,61 +185,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
              }
          }
  
@@ -28231,7 +28231,7 @@ index 519fbc86a33848a79981222c29de88191f848411..57cff20212f6d5f83d4b0169bf6aa185
      }
      // Paper end - Share random for entities to make them more random
      public org.bukkit.event.entity.CreatureSpawnEvent.@Nullable SpawnReason spawnReason; // Paper - Entity#getEntitySpawnReason
-@@ -419,6 +375,156 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -430,6 +386,156 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          return this.dimensions.makeBoundingBox(x, y, z);
      }
      // Paper end
@@ -28388,99 +28388,7 @@ index 519fbc86a33848a79981222c29de88191f848411..57cff20212f6d5f83d4b0169bf6aa185
  
      public Entity(EntityType<?> type, Level level) {
          this.type = type;
-@@ -1389,35 +1495,77 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
-         return list.isEmpty() ? distance : -Shapes.collide(Direction.Axis.Y, boundingBox, list, -distance);
-     }
- 
--    private Vec3 collide(Vec3 vec) {
--        AABB boundingBox = this.getBoundingBox();
--        List<VoxelShape> entityCollisions = this.level().getEntityCollisions(this, boundingBox.expandTowards(vec));
--        Vec3 vec3 = vec.lengthSqr() == 0.0 ? vec : collideBoundingBox(this, vec, boundingBox, this.level(), entityCollisions);
--        boolean flag = vec.x != vec3.x;
--        boolean flag1 = vec.y != vec3.y;
--        boolean flag2 = vec.z != vec3.z;
--        boolean flag3 = flag1 && vec.y < 0.0;
--        if (this.maxUpStep() > 0.0F && (flag3 || this.onGround()) && (flag || flag2)) {
--            AABB aabb = flag3 ? boundingBox.move(0.0, vec3.y, 0.0) : boundingBox;
--            AABB aabb1 = aabb.expandTowards(vec.x, this.maxUpStep(), vec.z);
--            if (!flag3) {
--                aabb1 = aabb1.expandTowards(0.0, -1.0E-5F, 0.0);
--            }
-+    // Paper start - optimise collisions
-+    private Vec3 collide(Vec3 movement) {
-+        final boolean xZero = movement.x == 0.0;
-+        final boolean yZero = movement.y == 0.0;
-+        final boolean zZero = movement.z == 0.0;
-+        if (xZero & yZero & zZero) {
-+            return movement;
-+        }
- 
--            List<VoxelShape> list = collectColliders(this, this.level, entityCollisions, aabb1);
--            float f = (float)vec3.y;
--            float[] floats = collectCandidateStepUpHeights(aabb, list, this.maxUpStep(), f);
-+        final AABB currentBox = this.getBoundingBox();
- 
--            for (float f1 : floats) {
--                Vec3 vec31 = collideWithShapes(new Vec3(vec.x, f1, vec.z), aabb, list);
--                if (vec31.horizontalDistanceSqr() > vec3.horizontalDistanceSqr()) {
--                    double d = boundingBox.minY - aabb.minY;
--                    return vec31.subtract(0.0, d, 0.0);
--                }
-+        final List<VoxelShape> potentialCollisionsVoxel = new ArrayList<>();
-+        final List<AABB> potentialCollisionsBB = new ArrayList<>();
-+
-+        final AABB initialCollisionBox;
-+        if (xZero & zZero) {
-+            // note: xZero & zZero -> collision on x/z == 0 -> no step height calculation
-+            // this specifically optimises entities standing still
-+            initialCollisionBox = movement.y < 0.0 ?
-+                ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.cutDownwards(currentBox, movement.y) : ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.cutUpwards(currentBox, movement.y);
-+        } else {
-+            initialCollisionBox = currentBox.expandTowards(movement);
-+        }
-+
-+        final List<AABB> entityAABBs = new ArrayList<>();
-+        ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.getEntityHardCollisions(
-+            this.level, (Entity)(Object)this, initialCollisionBox, entityAABBs, 0, null
-+        );
-+
-+        ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.getCollisionsForBlocksOrWorldBorder(
-+            this.level, (Entity)(Object)this, initialCollisionBox, potentialCollisionsVoxel, potentialCollisionsBB,
-+            ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.COLLISION_FLAG_CHECK_BORDER, null
-+        );
-+        potentialCollisionsBB.addAll(entityAABBs);
-+        final Vec3 collided = ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.performCollisions(movement, currentBox, potentialCollisionsVoxel, potentialCollisionsBB);
-+
-+        final boolean collidedX = collided.x != movement.x;
-+        final boolean collidedY = collided.y != movement.y;
-+        final boolean collidedZ = collided.z != movement.z;
-+
-+        final boolean collidedDownwards = collidedY && movement.y < 0.0;
-+
-+        final double stepHeight;
-+
-+        if ((!collidedDownwards && !this.onGround) || (!collidedX && !collidedZ) || (stepHeight = (double)this.maxUpStep()) <= 0.0) {
-+            return collided;
-+        }
-+
-+        final AABB collidedYBox = collidedDownwards ? currentBox.move(0.0, collided.y, 0.0) : currentBox;
-+        AABB stepRetrievalBox = collidedYBox.expandTowards(movement.x, stepHeight, movement.z);
-+        if (!collidedDownwards) {
-+            stepRetrievalBox = stepRetrievalBox.expandTowards(0.0, (double)-1.0E-5F, 0.0);
-+        }
-+
-+        final List<VoxelShape> stepVoxels = new ArrayList<>();
-+        final List<AABB> stepAABBs = entityAABBs;
-+
-+        ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.getCollisionsForBlocksOrWorldBorder(
-+            this.level, (Entity)(Object)this, stepRetrievalBox, stepVoxels, stepAABBs,
-+            ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.COLLISION_FLAG_CHECK_BORDER, null
-+        );
-+
-+        for (final float step : calculateStepHeights(collidedYBox, stepVoxels, stepAABBs, (float)stepHeight, (float)collided.y)) {
-+            final Vec3 stepResult = ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.performCollisions(new Vec3(movement.x, (double)step, movement.z), collidedYBox, stepVoxels, stepAABBs);
-+            if (stepResult.horizontalDistanceSqr() > collided.horizontalDistanceSqr()) {
-+                return stepResult.add(0.0, collidedYBox.minY - currentBox.minY, 0.0);
+@@ -1473,7 +1579,8 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
              }
          }
  
@@ -28490,7 +28398,7 @@ index 519fbc86a33848a79981222c29de88191f848411..57cff20212f6d5f83d4b0169bf6aa185
      }
  
      private static float[] collectCandidateStepUpHeights(AABB box, List<VoxelShape> colliders, float deltaY, float maxUpStep) {
-@@ -2713,21 +2861,110 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -2769,21 +2876,110 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
      }
  
      public boolean isInWall() {
@@ -28612,7 +28520,7 @@ index 519fbc86a33848a79981222c29de88191f848411..57cff20212f6d5f83d4b0169bf6aa185
      }
  
      public InteractionResult interact(Player player, InteractionHand hand) {
-@@ -4317,15 +4554,17 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -4373,15 +4569,17 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
      }
  
      public Iterable<Entity> getIndirectPassengers() {
@@ -28638,7 +28546,7 @@ index 519fbc86a33848a79981222c29de88191f848411..57cff20212f6d5f83d4b0169bf6aa185
      }
  
      public int countPlayerPassengers() {
-@@ -4474,77 +4713,126 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -4530,77 +4728,126 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          return Mth.lerp(partialTick, this.yRotO, this.yRot);
      }
  
@@ -28823,7 +28731,7 @@ index 519fbc86a33848a79981222c29de88191f848411..57cff20212f6d5f83d4b0169bf6aa185
  
      public boolean touchingUnloadedChunk() {
          AABB aabb = this.getBoundingBox().inflate(1.0);
-@@ -4704,6 +4992,15 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -4760,6 +5007,15 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
      }
  
      public final void setPosRaw(double x, double y, double z, boolean forceBoundingBoxUpdate) {
@@ -28839,7 +28747,7 @@ index 519fbc86a33848a79981222c29de88191f848411..57cff20212f6d5f83d4b0169bf6aa185
          if (!checkPosition(this, x, y, z)) {
              return;
          }
-@@ -4853,6 +5150,12 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -4909,6 +5165,12 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
  
      @Override
      public final void setRemoved(Entity.RemovalReason removalReason, org.bukkit.event.entity.EntityRemoveEvent.@Nullable Cause cause) { // CraftBukkit - add Bukkit remove cause
@@ -28852,7 +28760,7 @@ index 519fbc86a33848a79981222c29de88191f848411..57cff20212f6d5f83d4b0169bf6aa185
          org.bukkit.craftbukkit.event.CraftEventFactory.callEntityRemoveEvent(this, cause); // CraftBukkit
          final boolean alreadyRemoved = this.removalReason != null; // Paper - Folia schedulers
          if (this.removalReason == null) {
-@@ -4863,7 +5166,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -4919,7 +5181,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
              this.stopRiding();
          }
  
@@ -28861,7 +28769,7 @@ index 519fbc86a33848a79981222c29de88191f848411..57cff20212f6d5f83d4b0169bf6aa185
          this.levelCallback.onRemove(removalReason);
          this.onRemoval(removalReason);
          // Paper start - Folia schedulers
-@@ -4897,7 +5200,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -4953,7 +5215,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
      public boolean shouldBeSaved() {
          return (this.removalReason == null || this.removalReason.shouldSave())
              && !this.isPassenger()

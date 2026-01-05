@@ -1,0 +1,17 @@
+--- a/net/minecraft/world/level/block/FallingBlock.java
++++ b/net/minecraft/world/level/block/FallingBlock.java
+@@ -47,10 +_,10 @@
+ 
+     @Override
+     protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+-        if (isFree(level.getBlockState(pos.below())) && pos.getY() >= level.getMinY()) {
+-            FallingBlockEntity fallingBlockEntity = FallingBlockEntity.fall(level, pos, state);
+-            this.falling(fallingBlockEntity);
+-        }
++//        if (isFree(level.getBlockState(pos.below())) && pos.getY() >= level.getMinY()) {
++//            FallingBlockEntity fallingBlockEntity = FallingBlockEntity.fall(level, pos, state);
++//            this.falling(fallingBlockEntity);
++//        }
+     }
+ 
+     protected void falling(FallingBlockEntity entity) {
