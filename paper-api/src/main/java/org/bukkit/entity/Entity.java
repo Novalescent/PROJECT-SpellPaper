@@ -23,6 +23,7 @@ import org.bukkit.Server;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.World;
+import org.bukkit.WorldBorder;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.PistonMoveReaction;
 import org.bukkit.command.CommandSender;
@@ -1450,4 +1451,8 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
      * @param namespaced the namespaced of the rule
      */
     void removeAdditionalAlliedRule(@NotNull Namespaced namespaced);
+
+    void setCollisionBorder(@Nullable WorldBorder border);
+
+    @Nullable WorldBorder getCollisionBorder();
 }

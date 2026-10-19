@@ -1443,7 +1443,6 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
             .removeIf(entry -> entry.getKey().namespace().equals(nameSpaced.namespace()));
     }
 
-
     @Override
     public void setCollisionBorder(@Nullable WorldBorder border) {
         net.minecraft.world.level.border.WorldBorder handleBorder = null;
