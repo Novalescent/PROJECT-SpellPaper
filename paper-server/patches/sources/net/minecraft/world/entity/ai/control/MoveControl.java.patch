@@ -1,0 +1,42 @@
+--- a/net/minecraft/world/entity/ai/control/MoveControl.java
++++ b/net/minecraft/world/entity/ai/control/MoveControl.java
+@@ -48,34 +_,20 @@
+     }
+ 
+     public void strafe(final float forwards, final float right) {
++        this.strafe(forwards, right, 0.25);
++    }
++
++    public void strafe(final float forwards, final float right, double speedModifier) {
+         this.operation = MoveControl.Operation.STRAFE;
+         this.strafeForwards = forwards;
+         this.strafeRight = right;
+-        this.speedModifier = 0.25;
++        this.speedModifier = speedModifier;
+     }
+ 
+     public void tick() {
+         if (this.operation == MoveControl.Operation.STRAFE) {
+             float speed = (float)this.mob.getAttributeValue(Attributes.MOVEMENT_SPEED);
+             float speedModified = (float)this.speedModifier * speed;
+-            float xa = this.strafeForwards;
+-            float za = this.strafeRight;
+-            float dist = Mth.sqrt(xa * xa + za * za);
+-            if (dist < 1.0F) {
+-                dist = 1.0F;
+-            }
+-
+-            dist = speedModified / dist;
+-            xa *= dist;
+-            za *= dist;
+-            float sin = Mth.sin(this.mob.getYRot() * Mth.DEG_TO_RAD);
+-            float cos = Mth.cos(this.mob.getYRot() * Mth.DEG_TO_RAD);
+-            float dx = xa * cos - za * sin;
+-            float dz = za * cos + xa * sin;
+-            if (!this.isWalkable(dx, dz)) {
+-                this.strafeForwards = 1.0F;
+-                this.strafeRight = 0.0F;
+-            }
+ 
+             this.mob.setSpeed(speedModified);
+             this.mob.setZza(this.strafeForwards);
